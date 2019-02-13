@@ -15,78 +15,97 @@
 package cmd
 
 import (
-	"fmt"
+	"github.com/sirupsen/logrus"
+	"io"
 	"os"
+	"path/filepath"
 
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/corneliusweig/ketall/pkg"
+	"github.com/mitchellh/go-homedir"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var (
+	cmdOptions = &pkg.CmdOptions{}
+	v          string
+)
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "ketall",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
+func Execute() {
+	cmd := NewRootCmd(os.Stdout, os.Stderr)
+	if err := cmd.Execute(); err != nil {
+		logrus.Fatal("Ececution failed:", err)
+	}
+}
+
+func NewRootCmd(out, err io.Writer) *cobra.Command {
+	// rootCmd represents the base command when called without any subcommands
+	rootCmd := &cobra.Command{
+		Use:   "ketall",
+		Short: "A brief description of your application",
+		Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
 
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) {
-		pkg.Main()
-	},
-}
-
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		// Uncomment the following line if your bare application
+		// has an action associated with it:
+		Run: func(cmd *cobra.Command, args []string) {
+			pkg.Main()
+		},
 	}
-}
 
-func init() {
 	cobra.OnInitialize(initConfig)
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.ketall.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cmdOptions.CfgFile, "config", "", "config file (default is $HOME/.kube/ketall.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", pkg.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
+		if err := SetUpLogs(err, v); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	return rootCmd
 }
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if cfgFile != "" {
+	if cmdOptions.CfgFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(cfgFile)
+		viper.SetConfigFile(cmdOptions.CfgFile)
 	} else {
 		// Find home directory.
 		home, err := homedir.Dir()
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			logrus.Warn("Could not read home dir: %s", err)
+			return
 		}
 
 		// Search config in home directory with name ".ketall" (without extension).
-		viper.AddConfigPath(home)
-		viper.SetConfigName(".ketall")
+		viper.AddConfigPath(filepath.Join(home, ".kube"))
+		viper.SetConfigName("ketall")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
+		logrus.Debug("Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+func SetUpLogs(out io.Writer, level string) error {
+	logrus.SetOutput(out)
+	lvl, err := logrus.ParseLevel(level)
+	if err != nil {
+		return errors.Wrap(err, "parsing log level")
+	}
+	logrus.SetLevel(lvl)
+	return nil
 }
