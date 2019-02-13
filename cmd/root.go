@@ -32,46 +32,43 @@ var (
 	v          string
 )
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
-	cmd := NewRootCmd(os.Stdout, os.Stderr)
-	if err := cmd.Execute(); err != nil {
-		logrus.Fatal("Ececution failed:", err)
-	}
-}
-
-func NewRootCmd(out, err io.Writer) *cobra.Command {
-	// rootCmd represents the base command when called without any subcommands
-	rootCmd := &cobra.Command{
-		Use:   "ketall",
-		Short: "A brief description of your application",
-		Long: `A longer description that spans multiple lines and likely contains
+// rootCmd represents the base command when called without any subcommands
+var rootCmd = &cobra.Command{
+	Use:   "ketall",
+	Short: "A brief description of your application",
+	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
 
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-		// Uncomment the following line if your bare application
-		// has an action associated with it:
-		Run: func(cmd *cobra.Command, args []string) {
-			pkg.Main()
-		},
-	}
+	// Uncomment the following line if your bare application
+	// has an action associated with it:
+	Run: func(cmd *cobra.Command, args []string) {
+		pkg.Main()
+	},
+}
 
+// Execute adds all child commands to the root command and sets flags appropriately.
+// This is called by main.main(). It only needs to happen once to the rootCmd.
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		logrus.Fatal("Ececution failed:", err)
+	}
+}
+
+func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cmdOptions.CfgFile, "config", "", "config file (default is $HOME/.kube/ketall.yaml)")
 	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", pkg.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		if err := SetUpLogs(err, v); err != nil {
+		if err := SetUpLogs(os.Stderr, v); err != nil {
 			return err
 		}
 		return nil
 	}
-
-	return rootCmd
 }
 
 // initConfig reads in config file and ENV variables if set.
