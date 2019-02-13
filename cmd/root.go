@@ -28,7 +28,7 @@ import (
 )
 
 var (
-	cmdOptions = &pkg.CmdOptions{}
+	cmdOptions = pkg.NewCmdOptions()
 	v          string
 )
 
@@ -62,6 +62,8 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cmdOptions.CfgFile, "config", "", "config file (default is $HOME/.kube/ketall.yaml)")
 	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", pkg.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
+
+	cmdOptions.GenericCliFlags.AddFlags(rootCmd.Flags())
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		if err := SetUpLogs(os.Stderr, v); err != nil {
