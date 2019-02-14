@@ -5,15 +5,15 @@ import (
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 )
 
-type CmdOptions struct {
+type KetallOptions struct {
 	CfgFile         string
 	GenericCliFlags *genericclioptions.ConfigFlags
 	PrintFlags      *genericclioptions.PrintFlags
 	Verbs           []v1.Verbs
 }
 
-func NewCmdOptions() *CmdOptions {
-	return &CmdOptions{
+func NewCmdOptions() *KetallOptions {
+	return &KetallOptions{
 		GenericCliFlags: genericclioptions.NewConfigFlags(),
 		PrintFlags:      genericclioptions.NewPrintFlags(""),
 	}

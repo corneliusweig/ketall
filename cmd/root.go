@@ -29,8 +29,8 @@ import (
 )
 
 var (
-	gaOptions = options.NewCmdOptions()
-	v         string
+	ketallOptions = options.NewCmdOptions()
+	v             string
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -46,7 +46,7 @@ to quickly create a Cobra application.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
-		pkg.Main(gaOptions)
+		pkg.Main(ketallOptions)
 	},
 }
 
@@ -61,11 +61,11 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&gaOptions.CfgFile, "config", "", "config file (default is $HOME/.kube/ketall.yaml)")
+	rootCmd.PersistentFlags().StringVar(&ketallOptions.CfgFile, "config", "", "config file (default is $HOME/.kube/ketall.yaml)")
 	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", pkg.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
 
-	gaOptions.GenericCliFlags.AddFlags(rootCmd.Flags())
-	gaOptions.PrintFlags.AddFlags(rootCmd)
+	ketallOptions.GenericCliFlags.AddFlags(rootCmd.Flags())
+	ketallOptions.PrintFlags.AddFlags(rootCmd)
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		if err := SetUpLogs(os.Stderr, v); err != nil {
@@ -77,9 +77,9 @@ func init() {
 
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
-	if gaOptions.CfgFile != "" {
+	if ketallOptions.CfgFile != "" {
 		// Use config file from the flag.
-		viper.SetConfigFile(gaOptions.CfgFile)
+		viper.SetConfigFile(ketallOptions.CfgFile)
 	} else {
 		// Find home directory.
 		home, err := homedir.Dir()

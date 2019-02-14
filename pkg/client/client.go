@@ -34,8 +34,8 @@ type groupResource struct {
 	APIResource metav1.APIResource
 }
 
-func PrintAllServerResources(gaOptions *options.CmdOptions) error {
-	flags := gaOptions.GenericCliFlags
+func PrintAllServerResources(ketallOptions *options.KetallOptions) error {
+	flags := ketallOptions.GenericCliFlags
 
 	resNames, err := FetchAvailableResourceNames(flags)
 	if err != nil {

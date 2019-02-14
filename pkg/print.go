@@ -5,7 +5,6 @@ import (
 	"github.com/corneliusweig/ketall/pkg/options"
 )
 
-func Main(gaOptions *options.CmdOptions) {
-	//cmd.GAOptions.GenericCliFlags
-	_ = client.PrintAllServerResources(gaOptions)
+func Main(ketallOptions *options.KetallOptions) {
+	_ = client.PrintAllServerResources(ketallOptions)
 }
