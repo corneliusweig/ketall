@@ -36,17 +36,24 @@ func (wp *WrappingPrinter) PrintObject(w io.Writer, r runtime.Object) error {
 		out = w
 	}
 
-	allObjects, err := meta.ExtractList(r)
-	if err != nil {
-		return errors.Wrap(err, "extract resource list")
-	}
-	for _, o := range allObjects {
-		if err := wp.printer.PrintObj(o, out); err != nil {
-			return errors.Wrapf(err, "cannot print %s", o)
+	return wp.printNestedLists(r, out)
+}
+
+func (wp *WrappingPrinter) printNestedLists(r runtime.Object, w io.Writer) error {
+	if meta.IsListType(r) {
+		subs, err := meta.ExtractList(r)
+		if err != nil {
+			return errors.Wrap(err, "extract resource list")
 		}
+		for _, o := range subs {
+			if err := wp.printNestedLists(o, w); err != nil {
+				return err
+			}
+		}
+		return nil
 	}
 
-	return nil
+	return wp.printer.PrintObj(r, w)
 }
 
 func (*WrappingPrinter) printHeader(w io.Writer) error {

@@ -30,26 +30,13 @@ func (BasicTablePrinter) PrintObj(r runtime.Object, w io.Writer) error {
 		return fmt.Errorf("missing apiVersion or kind; try GetObjectKind().SetGroupVersionKind() if you know the type")
 	}
 
-	if meta.IsListType(r) {
-		objs, err := meta.ExtractList(r)
-		if err != nil {
-			return err
-		}
-		for _, r := range objs {
-			if err := printObj(w, r); err != nil {
-				return err
-			}
-		}
-
-	} else {
-		if err := printObj(w, r); err != nil {
-			return err
-		}
+	if err := printObj(r, w); err != nil {
+		return err
 	}
 	return nil
 }
 
-func printObj(w io.Writer, o runtime.Object) error {
+func printObj(o runtime.Object, w io.Writer) error {
 	groupKind := getObjectGroupKind(o)
 
 	acc, err := meta.Accessor(o)
