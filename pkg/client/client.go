@@ -24,7 +24,7 @@ type groupResource struct {
 func GetAllServerResources(ketallOptions *options.KetallOptions) (runtime.Object, error) {
 	flags := ketallOptions.GenericCliFlags
 
-	resNames, err := FetchAvailableResourceNames(ketallOptions.UseCache, flags)
+	resNames, err := FetchAvailableResourceNames(ketallOptions.UseCache, ketallOptions.Scope, flags)
 	if err != nil {
 		return nil, errors.Wrap(err, "fetch available resources")
 	}
@@ -53,9 +53,7 @@ func GetAllServerResources(ketallOptions *options.KetallOptions) (runtime.Object
 	return response.Object()
 }
 
-// TODO add flag to list only namespaced resources: --scope-namespace
-// TODO add flag to list only cluster resources: --scope-cluster
-func FetchAvailableResourceNames(cache bool, flags *genericclioptions.ConfigFlags) ([]string, error) {
+func FetchAvailableResourceNames(cache bool, scope string, flags *genericclioptions.ConfigFlags) ([]string, error) {
 	client, err := flags.ToDiscoveryClient()
 	if err != nil {
 		return nil, errors.Wrap(err, "discovery client")
@@ -63,6 +61,11 @@ func FetchAvailableResourceNames(cache bool, flags *genericclioptions.ConfigFlag
 
 	if !cache {
 		client.Invalidate()
+	}
+
+	skipCluster, skipNamespace, err := getResourceScope(scope)
+	if err != nil {
+		return nil, err
 	}
 
 	resources, err := client.ServerPreferredResources()
@@ -83,10 +86,16 @@ func FetchAvailableResourceNames(cache bool, flags *genericclioptions.ConfigFlag
 			if len(r.Verbs) == 0 {
 				continue
 			}
-			// filter to resources that support the specified verbs
+
+			if (r.Namespaced && skipNamespace) || (!r.Namespaced && skipCluster) {
+				continue
+			}
+
+			// filter to resources that can be listed
 			if len(r.Verbs) > 0 && !sets.NewString(r.Verbs...).HasAny("list", "get") {
 				continue
 			}
+
 			grs = append(grs, groupResource{
 				APIGroup:    gv.Group,
 				APIResource: r,
@@ -101,6 +110,23 @@ func FetchAvailableResourceNames(cache bool, flags *genericclioptions.ConfigFlag
 	}
 
 	return result, nil
+}
+
+func getResourceScope(scope string) (skipCluster, skipNamespace bool, err error) {
+	switch scope {
+	case "":
+		skipCluster = false
+		skipNamespace = false
+	case "namespace":
+		skipCluster = true
+		skipNamespace = false
+	case "cluster":
+		skipCluster = false
+		skipNamespace = true
+	default:
+		err = fmt.Errorf("%s is not a valid resource scope (must be one of 'cluster' or 'namespace')", scope)
+	}
+	return
 }
 
 type sortableGroupResource []groupResource

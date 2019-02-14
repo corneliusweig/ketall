@@ -44,6 +44,12 @@ usual "kubectl get all" command, which does not list cluster-level resources.
 
   Get all resources and use list of cached server resources
   $ ketall --cache
+
+  Get all namespaced resources
+  $ ketall --only-scope=namespace
+
+  Get all cluster level resources
+  $ ketall --only-scope=cluster
 `
 )
 
@@ -71,6 +77,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", pkg.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
 
 	rootCmd.Flags().BoolVar(&ketallOptions.UseCache, "cache", false, "use cached list of server resources")
+	rootCmd.Flags().StringVar(&ketallOptions.Scope, "only-scope", "", "only resources with scope cluster|namespace")
 
 	ketallOptions.GenericCliFlags.AddFlags(rootCmd.Flags())
 	ketallOptions.PrintFlags.AddFlags(rootCmd)
