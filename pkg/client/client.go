@@ -20,6 +20,7 @@ type groupResource struct {
 	APIResource metav1.APIResource
 }
 
+// TODO rework client, so that it does not fail without cluster admin rights
 func GetAllServerResources(ketallOptions *options.KetallOptions) (runtime.Object, error) {
 	flags := ketallOptions.GenericCliFlags
 
@@ -41,17 +42,20 @@ func GetAllServerResources(ketallOptions *options.KetallOptions) (runtime.Object
 		request.AllNamespaces(true)
 	}
 
-	r := request.Do()
+	response := request.Do()
 
-	if infos, err := r.Infos(); err != nil {
+	if infos, err := response.Infos(); err != nil {
 		return nil, errors.Wrap(err, "request resources")
 	} else if len(infos) == 0 {
 		return nil, fmt.Errorf("No resources found")
 	}
 
-	return r.Object()
+	return response.Object()
 }
 
+// TODO add flag to disable cache: --no-cache
+// TODO add flag to list only namespaced resources: --scope-namespace
+// TODO add flag to list only cluster resources: --scope-cluster
 func FetchAvailableResourceNames(flags *genericclioptions.ConfigFlags) ([]string, error) {
 	client, err := flags.ToDiscoveryClient()
 	if err != nil {
@@ -66,7 +70,7 @@ func FetchAvailableResourceNames(flags *genericclioptions.ConfigFlags) ([]string
 
 	resources, err := client.ServerPreferredResources()
 	if err != nil {
-		return nil, fmt.Errorf("ERR: %s", err)
+		return nil, errors.Wrap(err, "get preferred resources")
 	}
 
 	grs := []groupResource{}
@@ -100,18 +104,6 @@ func FetchAvailableResourceNames(flags *genericclioptions.ConfigFlags) ([]string
 	}
 
 	return result, nil
-}
-
-func getApiGroups(flags *genericclioptions.ConfigFlags) ([]string, error) {
-	client, err := flags.ToDiscoveryClient()
-	apiGroupList, err := client.ServerGroups()
-	if err != nil {
-		return nil, errors.Wrap(err, "getting api groups")
-	}
-	apiVersions := metav1.ExtractGroupVersions(apiGroupList)
-
-	sort.Strings(apiVersions)
-	return apiVersions, nil
 }
 
 type sortableGroupResource []groupResource
