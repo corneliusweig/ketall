@@ -28,13 +28,20 @@ func GetAllServerResources(ketallOptions *options.KetallOptions) (runtime.Object
 		return nil, errors.Wrap(err, "fetch available resources")
 	}
 
-	r := resource.NewBuilder(flags).
+	request := resource.NewBuilder(flags).
 		Unstructured().
-		AllNamespaces(true).
 		SelectAllParam(true).
 		ResourceTypes(resNames...).
-		Latest().
-		Do()
+		Latest()
+
+	ns := ketallOptions.GenericCliFlags.Namespace
+	if ns != nil && *ns != "" {
+		request.NamespaceParam(*ns)
+	} else {
+		request.AllNamespaces(true)
+	}
+
+	r := request.Do()
 
 	if infos, err := r.Infos(); err != nil {
 		return nil, errors.Wrap(err, "request resources")
@@ -47,6 +54,9 @@ func GetAllServerResources(ketallOptions *options.KetallOptions) (runtime.Object
 
 func FetchAvailableResourceNames(flags *genericclioptions.ConfigFlags) ([]string, error) {
 	client, err := flags.ToDiscoveryClient()
+	if err != nil {
+		return nil, errors.Wrap(err, "discovery client")
+	}
 
 	// TODO add option to disable caching
 	/*if !o.Cached {
