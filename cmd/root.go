@@ -60,7 +60,7 @@ var rootCmd = &cobra.Command{
 	Args:    cobra.NoArgs,
 	Example: ketallExamples,
 	Run: func(cmd *cobra.Command, args []string) {
-		pkg.KetAll(ketallOptions)
+		pkg.KetAll(os.Stdout, ketallOptions)
 	},
 }
 

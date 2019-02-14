@@ -15,13 +15,13 @@ import (
 	"time"
 )
 
-type BasicTablePrinter struct{}
+type TablePrinter struct{}
 
 const (
 	tableRow = "%s\t%s\t%s\t\n"
 )
 
-func (BasicTablePrinter) PrintObj(r runtime.Object, w io.Writer) error {
+func (*TablePrinter) PrintObj(r runtime.Object, w io.Writer) error {
 	if printers.InternalObjectPreventer.IsForbidden(reflect.Indirect(reflect.ValueOf(r)).Type().PkgPath()) {
 		return fmt.Errorf(printers.InternalObjectPrinterErr)
 	}
@@ -34,6 +34,11 @@ func (BasicTablePrinter) PrintObj(r runtime.Object, w io.Writer) error {
 		return err
 	}
 	return nil
+}
+
+func (*TablePrinter) PrintHeader(w io.Writer) error {
+	_, err := fmt.Fprintf(w, "%s\t%s\t%s\n", "NAME", "NAMESPACE", "AGE")
+	return err
 }
 
 func printObj(o runtime.Object, w io.Writer) error {

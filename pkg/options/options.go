@@ -27,7 +27,7 @@ type KAPrintFlags struct {
 
 func (f *KAPrintFlags) ToPrinter() (printers.ResourcePrinter, error) {
 	if f.OutputFormat == nil || *f.OutputFormat == "" {
-		return printer.BasicTablePrinter{}, nil
+		return &printer.TablePrinter{}, nil
 	}
 	return f.PrintFlags.ToPrinter()
 }
