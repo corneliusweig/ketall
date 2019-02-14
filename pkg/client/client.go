@@ -24,7 +24,7 @@ type groupResource struct {
 func GetAllServerResources(ketallOptions *options.KetallOptions) (runtime.Object, error) {
 	flags := ketallOptions.GenericCliFlags
 
-	resNames, err := FetchAvailableResourceNames(flags)
+	resNames, err := FetchAvailableResourceNames(ketallOptions.UseCache, flags)
 	if err != nil {
 		return nil, errors.Wrap(err, "fetch available resources")
 	}
@@ -53,20 +53,17 @@ func GetAllServerResources(ketallOptions *options.KetallOptions) (runtime.Object
 	return response.Object()
 }
 
-// TODO add flag to disable cache: --no-cache
 // TODO add flag to list only namespaced resources: --scope-namespace
 // TODO add flag to list only cluster resources: --scope-cluster
-func FetchAvailableResourceNames(flags *genericclioptions.ConfigFlags) ([]string, error) {
+func FetchAvailableResourceNames(cache bool, flags *genericclioptions.ConfigFlags) ([]string, error) {
 	client, err := flags.ToDiscoveryClient()
 	if err != nil {
 		return nil, errors.Wrap(err, "discovery client")
 	}
 
-	// TODO add option to disable caching
-	/*if !o.Cached {
-		// Always request fresh data from the server
-		discoveryclient.Invalidate()
-	}*/
+	if !cache {
+		client.Invalidate()
+	}
 
 	resources, err := client.ServerPreferredResources()
 	if err != nil {

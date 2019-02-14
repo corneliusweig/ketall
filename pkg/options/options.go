@@ -10,6 +10,7 @@ type KetallOptions struct {
 	CfgFile         string
 	GenericCliFlags *genericclioptions.ConfigFlags
 	PrintFlags      KAPrintFlags
+	UseCache        bool
 }
 
 func NewCmdOptions() *KetallOptions {

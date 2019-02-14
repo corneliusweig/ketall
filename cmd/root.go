@@ -39,11 +39,11 @@ ketall retrieves all resources which allow to be fetched. This complements the
 usual "kubectl get all" command, which does not list cluster-level resources.
 
 For example:
-  List all resources
+  Get all resources
   $ ketall
 
-  List all resources and do not use cached results
-  $ ketall --no-cache
+  Get all resources and use list of cached server resources
+  $ ketall --cache
 `
 )
 
@@ -67,6 +67,8 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&ketallOptions.CfgFile, "config", "", "config file (default is $HOME/.kube/ketall.yaml)")
 	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", pkg.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
+
+	rootCmd.Flags().BoolVar(&ketallOptions.UseCache, "cache", false, "use cached list of server resources")
 
 	ketallOptions.GenericCliFlags.AddFlags(rootCmd.Flags())
 	ketallOptions.PrintFlags.AddFlags(rootCmd)
