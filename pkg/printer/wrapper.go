@@ -2,6 +2,7 @@ package printer
 
 import (
 	"fmt"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"io"
 	"k8s.io/apimachinery/pkg/api/meta"
@@ -27,7 +28,7 @@ func (wp *WrappingPrinter) PrintObject(w io.Writer, r runtime.Object) error {
 		tw := tabwriter.NewWriter(w, 4, 4, 2, ' ', 0)
 		defer tw.Flush()
 		if err := wp.printHeader(tw); err != nil {
-			return err
+			return errors.Wrap(err, "print header")
 		}
 		out = tw
 	default:
@@ -35,11 +36,13 @@ func (wp *WrappingPrinter) PrintObject(w io.Writer, r runtime.Object) error {
 		out = w
 	}
 
-	allObjects, _ := meta.ExtractList(r)
+	allObjects, err := meta.ExtractList(r)
+	if err != nil {
+		return errors.Wrap(err, "extract resource list")
+	}
 	for _, o := range allObjects {
 		if err := wp.printer.PrintObj(o, out); err != nil {
-			logrus.Error(err)
-			return err
+			return errors.Wrapf(err, "cannot print %s", o)
 		}
 	}
 
