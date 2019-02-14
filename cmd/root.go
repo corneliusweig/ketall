@@ -37,8 +37,8 @@ const (
 	ketallLongDescription = `
 ketall retrieves all resources which allow to be fetched. This complements the
 usual "kubectl get all" command, which does not list cluster-level resources.
-
-For example:
+`
+	ketallExamples = `
   Get all resources
   $ ketall
 
@@ -48,11 +48,13 @@ For example:
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "ketall",
-	Short: "Get all resources",
-	Long:  ketallLongDescription,
+	Use:     "ketall",
+	Short:   "Get all resources",
+	Long:    ketallLongDescription,
+	Args:    cobra.NoArgs,
+	Example: ketallExamples,
 	Run: func(cmd *cobra.Command, args []string) {
-		pkg.Main(ketallOptions)
+		pkg.KetAll(ketallOptions)
 	},
 }
 

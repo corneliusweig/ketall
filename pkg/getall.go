@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func Main(ketallOptions *options.KetallOptions) {
+func KetAll(ketallOptions *options.KetallOptions) {
 	all, err := client.GetAllServerResources(ketallOptions)
 	if err != nil {
 		logrus.Fatal(err)
