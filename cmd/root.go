@@ -33,25 +33,29 @@ var (
 	v             string
 )
 
-// rootCmd represents the base command when called without any subcommands
+const (
+	ketallLongDescription = `
+ketall retrieves all resources which allow to be fetched. This complements the
+usual "kubectl get all" command, which does not list cluster-level resources.
+
+For example:
+  List all resources
+  $ ketall
+
+  List all resources and do not use cached results
+  $ ketall --no-cache
+`
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "ketall",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
+	Short: "Get all resources",
+	Long:  ketallLongDescription,
 	Run: func(cmd *cobra.Command, args []string) {
 		pkg.Main(ketallOptions)
 	},
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		logrus.Fatal("Ececution failed:", err)
@@ -88,7 +92,7 @@ func initConfig() {
 			return
 		}
 
-		// Search config in home directory with name ".ketall" (without extension).
+		// Search config in "~/.kube/ketall" (without extension).
 		viper.AddConfigPath(filepath.Join(home, ".kube"))
 		viper.SetConfigName("ketall")
 	}
@@ -108,5 +112,6 @@ func SetUpLogs(out io.Writer, level string) error {
 		return errors.Wrap(err, "parsing log level")
 	}
 	logrus.SetLevel(lvl)
+	logrus.Debugf("Set log-level to %s", level)
 	return nil
 }

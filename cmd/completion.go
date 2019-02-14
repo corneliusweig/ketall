@@ -21,7 +21,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const longDescription = `
+const completionLongDescription = `
 	Outputs shell completion for the given shell (bash or zsh)
 
 	OS X:
@@ -40,7 +40,7 @@ const longDescription = `
 var completionCmd = &cobra.Command{
 	Use:       "completion SHELL",
 	Short:     "Output shell completion for the given shell (bash or zsh)",
-	Long:      longDescription,
+	Long:      completionLongDescription,
 	ValidArgs: []string{"bash", "zsh"},
 	Args: func(cmd *cobra.Command, args []string) error {
 		if len(args) != 1 {
