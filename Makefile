@@ -31,8 +31,13 @@ GO_LDFLAGS +="
 
 GO_FILES  := $(shell find . -type f -name '*.go')
 
+.PHONY: test
 test:
 	GO111MODULE=on go test ./...
+
+.PHONY: coverage
+coverage: $(BUILD_DIR)
+	GO111MODULE=on go test -coverprofile=coverage.txt -covermode=atomic ./...
 
 all: $(TARGETS)
 
