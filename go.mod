@@ -2,6 +2,7 @@ module github.com/corneliusweig/ketall
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
+	github.com/blang/semver v3.5.1+incompatible
 	github.com/evanphx/json-patch v4.1.0+incompatible // indirect
 	github.com/gogo/protobuf v1.2.0 // indirect
 	github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c // indirect
@@ -19,6 +20,7 @@ require (
 	github.com/sirupsen/logrus v1.3.0
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.1
+	github.com/stretchr/testify v1.2.2
 	golang.org/x/net v0.0.0-20190213061140-3a22650c66bd // indirect
 	golang.org/x/oauth2 v0.0.0-20190212230446-3e8b2be13635 // indirect
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c // indirect
