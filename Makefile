@@ -36,6 +36,9 @@ test:
 
 all: $(TARGETS)
 
+dev: ketall-linux-amd64
+	@mv $< $(PROJECT)
+
 $(PROJECT)-%-amd64: $(GO_FILES)
 	GO111MODULE=on GOARCH=amd64 CGO_ENABLED=0 GOOS=$* go build -ldflags $(GO_LDFLAGS) -o $@ main.go
 
