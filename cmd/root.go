@@ -101,7 +101,7 @@ func initConfig() {
 		// Find home directory.
 		home, err := homedir.Dir()
 		if err != nil {
-			logrus.Warn("Could not read home dir: %s", err)
+			logrus.Warnf("Could not read home dir: %s", err)
 			return
 		}
 
