@@ -1,0 +1,37 @@
+language: go
+
+os:
+  - linux
+#  - osx
+
+go:
+  - "1.11.x"
+
+env:
+  - GO111MODULE=on
+
+script:
+  - make test
+  - make dev
+  - make coverage
+
+#after_success:
+#  - bash <(curl -s https://codecov.io/bash)
+
+before_deploy:
+  - make deploy
+
+deploy:
+  provider: releases
+  api_key: $GITHUB_OAUTH_TOKEN
+  file:
+    - out/ketall-linux-amd64
+    - out/ketall-linux-amd64.sha256
+    - out/ketall-windows-amd64
+    - out/ketall-windows-amd64.sha256
+    - out/ketall-darwin-amd64
+    - out/ketall-darwin-amd64.sha256
+    - out/v*.tar.gz
+  skip_cleanup: true
+  on:
+    tag: true
