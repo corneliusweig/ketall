@@ -122,7 +122,7 @@ func FetchAvailableResourceNames(cache bool, scope string, flags *genericcliopti
 	sort.Stable(sortableGroupResource(grs))
 	result := []string{}
 	for _, r := range grs {
-		result = append(result, r.APIResource.Name)
+		result = append(result, r.fullName())
 	}
 
 	return result, nil
@@ -143,6 +143,13 @@ func getResourceScope(scope string) (skipCluster, skipNamespace bool, err error)
 		err = fmt.Errorf("%s is not a valid resource scope (must be one of 'cluster' or 'namespace')", scope)
 	}
 	return
+}
+
+func (g groupResource) fullName() string {
+	if g.APIGroup == "" {
+		return g.APIResource.Name
+	}
+	return fmt.Sprintf("%s.%s", g.APIResource.Name, g.APIGroup)
 }
 
 type sortableGroupResource []groupResource
