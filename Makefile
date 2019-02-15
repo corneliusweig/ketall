@@ -14,14 +14,16 @@
 
 PROJECT   ?= ketall
 REPOPATH  ?= github.com/corneliusweig/$(PROJECT)
-PLATFORMS ?= linux windows darwin
+COMMIT    := $(shell git rev-parse HEAD)
+VERSION   ?= $(shell git describe --always --tags --dirty)
 
-TARGETS   := $(patsubst %,$(PROJECT)-%-amd64,$(PLATFORMS))
+BUILDDIR  := out
+PLATFORMS ?= linux windows darwin
+DISTFILE  := $(BUILDDIR)/$(VERSION).tar.gz
+TARGETS   := $(patsubst %,$(BUILDDIR)/$(PROJECT)-%-amd64,$(PLATFORMS))
 CHECKSUMS := $(patsubst %,%.sha256,$(TARGETS))
 
 VERSION_PACKAGE := $(REPOPATH)/pkg/version
-COMMIT          := $(shell git rev-parse HEAD)
-VERSION         ?= $(shell git describe --always --tags --dirty)
 
 GO_LDFLAGS :="
 GO_LDFLAGS += -X $(VERSION_PACKAGE).version=$(VERSION)
@@ -35,27 +37,26 @@ GO_FILES  := $(shell find . -type f -name '*.go')
 test:
 	GO111MODULE=on go test ./...
 
-.PHONY: coverage
+.PHONY: coverage $(BUILDDIR)
 coverage: $(BUILD_DIR)
-	GO111MODULE=on go test -coverprofile=coverage.txt -covermode=atomic ./...
+	GO111MODULE=on go test -coverprofile=$(BUILDDIR)/coverage.txt -covermode=atomic ./...
 
 all: $(TARGETS)
 
-dev: ketall-linux-amd64
+dev: $(BUILDDIR)/ketall-linux-amd64
 	@mv $< $(PROJECT)
 
-$(PROJECT)-%-amd64: $(GO_FILES)
+$(BUILDDIR)/$(PROJECT)-%-amd64: $(GO_FILES) $(BUILDDIR)
 	GO111MODULE=on GOARCH=amd64 CGO_ENABLED=0 GOOS=$* go build -ldflags $(GO_LDFLAGS) -o $@ main.go
+
+$(BUILDDIR):
+	mkdir -p "$@"
 
 .PHONY: deploy
 deploy: $(TARGETS)
-	for x in $^; do sha256sum $$x > $${x}.sha256;done
-	git archive --format=tar.gz HEAD > $(VERSION).tar.gz
-
-.PHONY: dist
-dist: $(TARGETS)
-	tar czf $(PROJECT).tar.gz $(TARGETS) Makefile plugin.yaml
+	for x in $^; do shasum -a 256 $$x > $${x}.sha256; done
+	git archive --prefix="ketall-$(VERSION)/" --format=tar.gz HEAD > $(BUILDDIR)/$(VERSION).tar.gz
 
 .PHONY: clean
 clean:
-	$(RM) $(TARGETS) $(CHECKSUMS) $(VERSION).tar.gz
+	$(RM) $(TARGETS) $(CHECKSUMS) $(DISTFILE)
