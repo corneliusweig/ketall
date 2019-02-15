@@ -12,19 +12,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+PROJECT   ?= ketall
+REPOPATH  ?= github.com/corneliusweig/$(PROJECT)
+PLATFORMS ?= linux windows darwin
 
-name      := ketall
-platforms := linux windows darwin
-targets   := $(patsubst %,$(name)-%,$(platforms))
-deps      := $(shell find . -name '*.go')
+TARGETS   := $(patsubst %,$(PROJECT)-%-amd64,$(PLATFORMS))
+CHECKSUMS := $(patsubst %,%.sha256,$(TARGETS))
+
+VERSION_PACKAGE := $(REPOPATH)/pkg/version
+COMMIT          := $(shell git rev-parse HEAD)
+VERSION         ?= $(shell git describe --always --tags --dirty)
+
+GO_LDFLAGS :="
+GO_LDFLAGS += -X $(VERSION_PACKAGE).version=$(VERSION)
+GO_LDFLAGS += -X $(VERSION_PACKAGE).buildDate=$(shell date +'%Y-%m-%dT%H:%M:%SZ')
+GO_LDFLAGS += -X $(VERSION_PACKAGE).gitCommit=$(COMMIT)
+GO_LDFLAGS +="
+
+GO_FILES  := $(shell find . -type f -name '*.go')
 
 test:
-	@GO111MODULE=on go test ./...
+	GO111MODULE=on go test ./...
 
-all: $(targets)
+all: $(TARGETS)
 
-$(name)-%: $(deps)
-	@GO111MODULE=on GOARCH=amd64 GOOS=$* go build -o $@ main.go
+$(PROJECT)-%-amd64: $(GO_FILES)
+	GO111MODULE=on GOARCH=amd64 CGO_ENABLED=0 GOOS=$* go build -ldflags $(GO_LDFLAGS) -o $@ main.go
 
-dist: $(targets)
-	@tar czf $(name).tar.gz $(targets) Makefile plugin.yaml
+.PHONY: deploy
+deploy: $(TARGETS)
+	for x in $^; do sha256sum $$x > $${x}.sha256;done
+	git archive --format=tar.gz HEAD > $(VERSION).tar.gz
+
+.PHONY: dist
+dist: $(TARGETS)
+	tar czf $(PROJECT).tar.gz $(TARGETS) Makefile plugin.yaml
+
+.PHONY: clean
+clean:
+	$(RM) $(TARGETS) $(CHECKSUMS) $(VERSION).tar.gz
