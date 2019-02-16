@@ -21,7 +21,9 @@ BUILDDIR  := out
 PLATFORMS ?= linux windows darwin
 DISTFILE  := $(BUILDDIR)/$(VERSION).tar.gz
 TARGETS   := $(patsubst %,$(BUILDDIR)/$(PROJECT)-%-amd64,$(PLATFORMS))
+BUNDLE    := $(BUILDDIR)/bundle.tar.gz
 CHECKSUMS := $(patsubst %,%.sha256,$(TARGETS))
+CHECKSUMS += $(BUNDLE).sha256
 
 VERSION_PACKAGE := $(REPOPATH)/pkg/version
 
@@ -37,26 +39,33 @@ GO_FILES  := $(shell find . -type f -name '*.go')
 test:
 	GO111MODULE=on go test ./...
 
-.PHONY: coverage $(BUILDDIR)
+.PHONY: coverage
 coverage: $(BUILD_DIR)
 	GO111MODULE=on go test -coverprofile=$(BUILDDIR)/coverage.txt -covermode=atomic ./...
 
+.PHONY: all
 all: $(TARGETS)
 
+.PHONY: dev
 dev: $(BUILDDIR)/ketall-linux-amd64
 	@mv $< $(PROJECT)
 
 $(BUILDDIR)/$(PROJECT)-%-amd64: $(GO_FILES) $(BUILDDIR)
 	GO111MODULE=on GOARCH=amd64 CGO_ENABLED=0 GOOS=$* go build -ldflags $(GO_LDFLAGS) -o $@ main.go
 
+$(BUNDLE): $(TARGETS)
+	tar czf $(BUNDLE) -C $(BUILDDIR) $(patsubst $(BUILDDIR)/%,%,$(TARGETS))
+
 $(BUILDDIR):
 	mkdir -p "$@"
 
+%.sha256: %
+	shasum -a 256 $< > $@
+
 .PHONY: deploy
-deploy: $(TARGETS)
-	for x in $^; do shasum -a 256 $$x > $${x}.sha256; done
-	git archive --prefix="ketall-$(VERSION)/" --format=tar.gz HEAD > $(BUILDDIR)/$(VERSION).tar.gz
+deploy: $(CHECKSUMS)
+	git archive --prefix="ketall-$(VERSION)/" --format=tar.gz HEAD > $(DISTFILE)
 
 .PHONY: clean
 clean:
-	$(RM) $(TARGETS) $(CHECKSUMS) $(DISTFILE)
+	$(RM) $(TARGETS) $(CHECKSUMS) $(DISTFILE) $(BUNDLE)
