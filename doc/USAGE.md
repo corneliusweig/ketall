@@ -1,8 +1,7 @@
 <!-- DO NOT MOVE THIS FILE, BECAUSE IT NEEDS A PERMANENT ADDRESS -->
 
-![ketall demo](demo.gif "ketall demo")
-
 # Usage
+![ketall demo](demo.gif "ketall demo")
 
 If you installed via [krew](https://github.com/GoogleContainerTools/krew) do
 ```bash
@@ -12,9 +11,9 @@ Because this tries to access __all__ resources, you must have unrestricted acces
 
 ## Options
 
-- `--cache` will consider the http cache to determine the server resources to look at. Disabled by default.
 - `--only-scope=cluster` will only show cluster level resources, such as `ClusterRole`, `Namespace`, or `PersistentVolume`.
 - `--only-scope=namespace` will only show namespaced resources, such as `ServiceAccount`, `Role`, `ConfigMap`, or `Endpoint`.
+- `--cache` will consider the http cache to determine the server resources to look at. Disabled by default.
 - ...and many standard `kubectl` options. Have a look at `kubectl get-all --help` for a full list of supported flags.
 
 ## Examples
