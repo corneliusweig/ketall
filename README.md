@@ -10,10 +10,12 @@ This helper will list __all__ resources the cluster has to offer.
 
 ## Installation
 
+<!--
 ### Via krew
 ```bash
 kubectl krew install get-all
 ```
+-->
 
 ### Binaries
 When using the binaries for installation, also have a look at [doc/USAGE](doc/USAGE.md).
