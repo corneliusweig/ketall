@@ -47,7 +47,7 @@ Requirements:
 Compiling:
 ```bash
 export PLATFORMS=$(go env GOOS)
-make all   # binaries will be in the out/ dir
+make all   # binaries will be placed in out/
 ```
 
 #### Build in docker
@@ -62,28 +62,33 @@ docker build . -t ketall-builder
 docker run --rm -v $PWD:/go/bin/ --env PLATFORMS=$(go env GOOS) ketall-builder
 docker rmi ketall-builder
 ```
-Binaries will be in the current directory.
+Binaries will be placed in the current directory.
 
 ## Examples
-
-- Get all resources
-  ```bash
+Get all resources...
+- ```
   ketall
   ```
 
-- Get all resources and use list of cached server resources
-  ```bash
+- ... at cluster level
+  ```
+  ketall --only-scope=cluster
+  ```
+
+- ... in some namespace
+  ```
+  ketall --only-scope=namespace --namespace=my-namespace
+  ```
+
+- ... using list of cached server resources
+  ```
   ketall --cache
   ```
+  Note that this may fail to show __really__ everything, if the cache is stale.
 
-- Get all namespaced resources
-  ```bash
-  ketall --only-scope=namespace
+- ... and combine with common `kubectl` parameters
   ```
-
-- Get all cluster level resources
-  ```bash
-  ketall --only-scope=cluster
+  KUBECONFIG=otherconfig ketall -o name --context some --namespace kube-system
   ```
 
 <!--
