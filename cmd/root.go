@@ -37,27 +37,27 @@ var (
 
 const (
 	ketallLongDescription = `
-ketall retrieves all resources which allow to be fetched. This complements the
-usual "kubectl get all" command, which does not list cluster-level resources.
+Like 'kubectl get all', but get _really_ all resources
+
+Ketall retrieves all resources which allow to be fetched. This complements the
+usual "kubectl get all" command, which excludes all cluster-level and some
+namespaced resources.
 `
 	ketallExamples = `
   Get all resources
   $ ketall
 
-  Get all resources and use list of cached server resources
-  $ ketall --cache
-
-  Get all namespaced resources
-  $ ketall --only-scope=namespace
-
   Get all cluster level resources
   $ ketall --only-scope=cluster
+
+  Get all resources in a particular namespace
+  $ ketall --only-scope=namespace --namespace=<some>
 `
 )
 
 var rootCmd = &cobra.Command{
 	Use:     "ketall",
-	Short:   "Get all resources",
+	Short:   "Like 'kubectl get all', but get _really_ all resources",
 	Long:    ketallLongDescription,
 	Args:    cobra.NoArgs,
 	Example: ketallExamples,
