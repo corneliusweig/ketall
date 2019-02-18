@@ -30,9 +30,9 @@ type FlattenListAdapter struct {
 	printers.ResourcePrinter
 }
 
-func NewFlattenListAdapterPrinter(printer printers.ResourcePrinter) FlattenListAdapter {
+func NewFlattenListAdapterPrinter(printer printers.ResourcePrinter) printers.ResourcePrinter {
 	logrus.Debugf("Wrapping %T with FlattenListAdapterPrinter", printer)
-	return FlattenListAdapter{printer}
+	return &FlattenListAdapter{printer}
 }
 
 func (n *FlattenListAdapter) PrintObj(r runtime.Object, w io.Writer) error {
@@ -56,9 +56,9 @@ type ListAdapterPrinter struct {
 	printers.ResourcePrinter
 }
 
-func NewListAdapterPrinter(printer printers.ResourcePrinter) ListAdapterPrinter {
+func NewListAdapterPrinter(printer printers.ResourcePrinter) printers.ResourcePrinter {
 	logrus.Debugf("Wrapping %T with ListAdapterPrinter", printer)
-	return ListAdapterPrinter{printer}
+	return &ListAdapterPrinter{printer}
 }
 
 func (n *ListAdapterPrinter) PrintObj(r runtime.Object, w io.Writer) error {
