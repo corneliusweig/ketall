@@ -22,6 +22,7 @@ import (
 	"github.com/corneliusweig/ketall/pkg/printer"
 	"github.com/sirupsen/logrus"
 	"io"
+	"k8s.io/cli-runtime/pkg/genericclioptions/printers"
 	"text/tabwriter"
 )
 
@@ -37,20 +38,28 @@ func KetAll(w io.Writer, ketallOptions *options.KetallOptions) {
 	}
 
 	out := w
-	if p, ok := resourcePrinter.(*printer.TablePrinter); ok {
+	p := resourcePrinter
+	switch pr := resourcePrinter.(type) {
+	// yaml and json printers should operate on the full tree structure with nested lists
+	case *printers.JSONPrinter:
+		p = printer.NewListAdapterPrinter(pr)
+	case *printers.YAMLPrinter:
+		p = printer.NewListAdapterPrinter(pr)
+	// other printers should flatten the resource list and operate on leaf items
+	case *printer.TablePrinter:
 		logrus.Debug("Using tabwriter")
 		tw := tabwriter.NewWriter(w, 4, 4, 2, ' ', 0)
 		defer tw.Flush()
 		out = tw
-		if err := p.PrintHeader(out); err != nil {
+		if err := pr.PrintHeader(out); err != nil {
 			logrus.Fatal("print header", err)
 		}
-	} else {
-		logrus.Debug("Using default writer")
+		p = printer.NewFlattenListAdapterPrinter(pr)
+	default:
+		p = printer.NewFlattenListAdapterPrinter(pr)
 	}
 
-	printer := printer.NewListAdapterPrinter(resourcePrinter)
-	if err = printer.PrintObj(all, out); err != nil {
+	if err = p.PrintObj(all, out); err != nil {
 		logrus.Fatal(err)
 	}
 }
