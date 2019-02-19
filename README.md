@@ -31,9 +31,9 @@ Get all resources...
 
 - ... using list of cached server resources
   ```
-  ketall --cache
+  ketall --use-cache
   ```
-  Note that this may fail to show __really__ everything, if the cache is stale.
+  Note that this may fail to show __really__ everything, if the http cache is stale.
 
 - ... and combine with common `kubectl` parameters
   ```

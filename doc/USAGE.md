@@ -13,7 +13,7 @@ Because this tries to access __all__ resources, you must have unrestricted acces
 
 - `--only-scope=cluster` will only show cluster level resources, such as `ClusterRole`, `Namespace`, or `PersistentVolume`.
 - `--only-scope=namespace` will only show namespaced resources, such as `ServiceAccount`, `Role`, `ConfigMap`, or `Endpoint`.
-- `--cache` will consider the http cache to determine the server resources to look at. Disabled by default.
+- `--use-cache` will consider the http cache to determine the server resources to look at. Disabled by default.
 - ...and many standard `kubectl` options. Have a look at `kubectl get-all --help` for a full list of supported flags.
 
 ## Examples
@@ -34,9 +34,9 @@ Get all resources...
 
 - ... using list of cached server resources
   ```
-  kubectl get-all --cache
+  kubectl get-all --use-cache
   ```
-  Note that this may fail to show __really__ everything, if the cache is stale.
+  Note that this may fail to show __really__ everything, if the http cache is stale.
 
 - ... and combine with common `kubectl` parameters
   ```
@@ -56,6 +56,15 @@ source <(ketall completion bash) # for bash users
 source <(ketall completion zsh)  # for zsh users
 ```
 Also see `ketall completion --help` for further instructions.
+
+## Configuration
+The command will look for the configuration file `ketall` (no extension) in `.` or `$HOME/.kube/`, unless overridden by the `--config` option.
+The following settings can be configured:
+```yaml
+only-scope: cluster
+namespace: default
+use-cache: true
+```
 
 ## Installation
 
