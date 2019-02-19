@@ -31,6 +31,7 @@ type KetallOptions struct {
 	PrintFlags      KAPrintFlags
 	UseCache        bool
 	Scope           string
+	Exclusions      []string
 	Streams         *genericclioptions.IOStreams
 }
 

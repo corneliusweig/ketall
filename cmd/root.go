@@ -42,16 +42,23 @@ Like 'kubectl get all', but get _really_ all resources
 Ketall retrieves all resources which allow to be fetched. This complements the
 usual "kubectl get all" command, which excludes all cluster-level and some
 namespaced resources.
+
+More on https://github.com/corneliusweig/ketall/blob/v0.0.2/doc/USAGE.md
 `
 	ketallExamples = `
-  Get all resources
+  Get all resources, excluding events
   $ ketall
+
+  Get all resources, including events
+  $ ketall --exclude=
 
   Get all cluster level resources
   $ ketall --only-scope=cluster
 
   Get all resources in a particular namespace
   $ ketall --only-scope=namespace --namespace=<some>
+
+  Some options can also be configured in the config file 'ketall'
 `
 )
 
@@ -80,6 +87,7 @@ func init() {
 
 	rootCmd.Flags().BoolVar(&ketallOptions.UseCache, constants.FlagUseCache, false, "use cached list of server resources")
 	rootCmd.Flags().StringVar(&ketallOptions.Scope, constants.FlagScope, "", "only resources with scope cluster|namespace")
+	rootCmd.Flags().StringSliceVar(&ketallOptions.Exclusions, constants.FlagExclude, []string{"events"}, "filter by resource name (plural form or short name)")
 
 	ketallOptions.GenericCliFlags.AddFlags(rootCmd.Flags())
 	ketallOptions.PrintFlags.AddFlags(rootCmd)

@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"github.com/corneliusweig/ketall/pkg/constants"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -42,10 +43,12 @@ func GetAllServerResources(flags *genericclioptions.ConfigFlags) (runtime.Object
 	useCache := viper.GetBool(constants.FlagUseCache)
 	scope := viper.GetString(constants.FlagScope)
 
-	resNames, err := FetchAvailableResourceNames(useCache, scope, flags)
+	grs, err := FetchAvailableGroupResources(useCache, scope, flags)
 	if err != nil {
-		return nil, errors.Wrap(err, "fetch available resources")
+		return nil, errors.Wrap(err, "fetch available group resources")
 	}
+
+	resNames := extractRelevantResourceNames(grs, viper.GetStringSlice(constants.FlagExclude))
 
 	request := resource.NewBuilder(flags).
 		Unstructured().
@@ -70,7 +73,7 @@ func GetAllServerResources(flags *genericclioptions.ConfigFlags) (runtime.Object
 	return response.Object()
 }
 
-func FetchAvailableResourceNames(cache bool, scope string, flags *genericclioptions.ConfigFlags) ([]string, error) {
+func FetchAvailableGroupResources(cache bool, scope string, flags *genericclioptions.ConfigFlags) ([]groupResource, error) {
 	client, err := flags.ToDiscoveryClient()
 	if err != nil {
 		return nil, errors.Wrap(err, "discovery client")
@@ -120,13 +123,27 @@ func FetchAvailableResourceNames(cache bool, scope string, flags *genericcliopti
 		}
 	}
 
+	return grs, nil
+}
+
+func extractRelevantResourceNames(grs []groupResource, exclusions []string) []string {
 	sort.Stable(sortableGroupResource(grs))
+	forbidden := sets.NewString(exclusions...)
+
 	result := []string{}
 	for _, r := range grs {
-		result = append(result, r.fullName())
+		name := r.fullName()
+		resourceIds := r.APIResource.ShortNames
+		resourceIds = append(resourceIds, r.APIResource.Name)
+		if forbidden.HasAny(resourceIds...) {
+			logrus.Debugf("Excluding %s", name)
+			continue
+		}
+		result = append(result, name)
 	}
 
-	return result, nil
+	logrus.Debugf("Resources to fetch: %s", result)
+	return result
 }
 
 func getResourceScope(scope string) (skipCluster, skipNamespace bool, err error) {

@@ -23,5 +23,6 @@ const (
 
 	FlagUseCache  = "use-cache"
 	FlagScope     = "only-scope"
+	FlagExclude   = "exclude"
 	FlagNamespace = "namespace"
 )
