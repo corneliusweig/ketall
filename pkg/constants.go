@@ -18,6 +18,12 @@ package pkg
 
 import "github.com/sirupsen/logrus"
 
-var (
+const (
 	DefaultLogLevel = logrus.WarnLevel
+
+	FlagUseCache  = "cache"
+	FlagScope     = "only-scope"
+	FlagConfig    = "config"
+	FlagVerbosity = "verbosity"
+	FlagNamespace = "namespace"
 )
