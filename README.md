@@ -1,8 +1,3 @@
-<!--
-Need a real "get-all" command
-https://github.com/kubernetes/kubectl/issues/527#issue-355158795
--->
-
 # ketall
 Kubectl plugin to show really all kubernetes resources
 
@@ -15,28 +10,34 @@ This helper lists _really_ all resources the cluster has to offer.
 
 ## Examples
 Get all resources...
-- ```
+- ... excluding events (this is hardly ever useful)
+  ```bash
   ketall
   ```
 
-- ... at cluster level
+- ... _including_ events
+  ```bash
+  ketall --exclude=
   ```
+
+- ... at cluster level
+  ```bash
   ketall --only-scope=cluster
   ```
 
 - ... in some namespace
-  ```
+  ```bash
   ketall --only-scope=namespace --namespace=my-namespace
   ```
 
 - ... using list of cached server resources
-  ```
+  ```bash
   ketall --use-cache
   ```
   Note that this may fail to show __really__ everything, if the http cache is stale.
 
 - ... and combine with common `kubectl` parameters
-  ```
+  ```bash
   KUBECONFIG=otherconfig ketall -o name --context some --namespace kube-system
   ```
 

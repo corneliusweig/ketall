@@ -18,28 +18,34 @@ Because this tries to access __all__ resources, you must have unrestricted acces
 
 ## Examples
 Get all resources...
-- ```
+- ... excluding events (this is hardly ever useful)
+  ```bash
   kubectl get-all
   ```
 
-- ... at cluster level
+- ... _including_ events
+  ```bash
+  kubectl get-all --exclude=
   ```
+
+- ... at cluster level
+  ```bash
   kubectl get-all --only-scope=cluster
   ```
 
 - ... in some namespace
-  ```
+  ```bash
   kubectl get-all --only-scope=namespace --namespace=my-namespace
   ```
 
 - ... using list of cached server resources
-  ```
+  ```bash
   kubectl get-all --use-cache
   ```
   Note that this may fail to show __really__ everything, if the http cache is stale.
 
 - ... and combine with common `kubectl` parameters
-  ```
+  ```bash
   KUBECONFIG=otherconfig kubectl get-all -o name --context some --namespace kube-system
   ```
 
