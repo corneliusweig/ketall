@@ -50,14 +50,10 @@
 
 This is a checklist for new releases:
 
-0. Replace old tag in installation instructions and update references.
 0. Create release notes in `doc/releases`
 0. Update usage instructions, if applicable
-0. Add new tag and push tag to GitHub
-   ```bash
-   git tag vX.Y.Z
-   git push --tags
-   ```
+0. Create a new tag via `hack/make_tag.sh`
+0. Push the tag to GitHub `git push --tags`
 0. Run `make deploy`
 0. Create new release on GitHub Releases and upload artifacts
 0. Update [krew-index](https://github.com/GoogleContainerTools/krew-index)
