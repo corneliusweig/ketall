@@ -20,7 +20,6 @@ import (
 	"github.com/corneliusweig/ketall/pkg/options"
 	"github.com/sirupsen/logrus"
 	"io"
-	"os"
 	"path/filepath"
 
 	"github.com/corneliusweig/ketall/pkg"
@@ -62,7 +61,7 @@ var rootCmd = &cobra.Command{
 	Args:    cobra.NoArgs,
 	Example: ketallExamples,
 	Run: func(cmd *cobra.Command, args []string) {
-		pkg.KetAll(os.Stdout, ketallOptions)
+		pkg.KetAll(ketallOptions)
 	},
 }
 
@@ -85,7 +84,7 @@ func init() {
 	ketallOptions.PrintFlags.AddFlags(rootCmd)
 
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		if err := SetUpLogs(os.Stderr, v); err != nil {
+		if err := SetUpLogs(ketallOptions.Streams.ErrOut, v); err != nil {
 			return err
 		}
 		return nil
