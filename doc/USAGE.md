@@ -64,6 +64,10 @@ The following settings can be configured:
 only-scope: cluster
 namespace: default
 use-cache: true
+# only plural form or abbreviations
+exclude:
+- componentstatuses
+- cm   # configmaps
 ```
 
 ## Installation
