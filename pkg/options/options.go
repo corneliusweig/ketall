@@ -17,9 +17,12 @@ limitations under the License.
 package options
 
 import (
+	"bytes"
 	"github.com/corneliusweig/ketall/pkg/printer"
+	"github.com/sirupsen/logrus"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/genericclioptions/printers"
+	"os"
 )
 
 type KetallOptions struct {
@@ -28,13 +31,26 @@ type KetallOptions struct {
 	PrintFlags      KAPrintFlags
 	UseCache        bool
 	Scope           string
+	Streams         *genericclioptions.IOStreams
 }
 
 func NewCmdOptions() *KetallOptions {
 	return &KetallOptions{
 		GenericCliFlags: genericclioptions.NewConfigFlags(),
 		PrintFlags:      KAPrintFlags{genericclioptions.NewPrintFlags("")},
+		Streams:         &genericclioptions.IOStreams{os.Stdin, os.Stdout, os.Stderr},
 	}
+}
+
+// Sets up options with in-memory buffers as in- and output-streams
+func NewTestTestCmdOptions() (*KetallOptions, *bytes.Buffer, *bytes.Buffer, *bytes.Buffer) {
+	iostreams, in, out, errout := genericclioptions.NewTestIOStreams()
+	logrus.SetOutput(errout)
+	return &KetallOptions{
+		GenericCliFlags: genericclioptions.NewConfigFlags(),
+		PrintFlags:      KAPrintFlags{genericclioptions.NewPrintFlags("")},
+		Streams:         &iostreams,
+	}, in, out, errout
 }
 
 type KAPrintFlags struct {

@@ -17,14 +17,14 @@ limitations under the License.
 package cmd
 
 import (
+	"github.com/corneliusweig/ketall/pkg/constants"
 	"github.com/corneliusweig/ketall/pkg/options"
 	"github.com/sirupsen/logrus"
 	"io"
-	"os"
+	"k8s.io/client-go/util/homedir"
 	"path/filepath"
 
 	"github.com/corneliusweig/ketall/pkg"
-	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -62,7 +62,7 @@ var rootCmd = &cobra.Command{
 	Args:    cobra.NoArgs,
 	Example: ketallExamples,
 	Run: func(cmd *cobra.Command, args []string) {
-		pkg.KetAll(os.Stdout, ketallOptions)
+		pkg.KetAll(ketallOptions)
 	},
 }
 
@@ -76,16 +76,21 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&ketallOptions.CfgFile, "config", "", "config file (default is $HOME/.kube/ketall.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", pkg.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
+	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", constants.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
 
-	rootCmd.Flags().BoolVar(&ketallOptions.UseCache, "cache", false, "use cached list of server resources")
-	rootCmd.Flags().StringVar(&ketallOptions.Scope, "only-scope", "", "only resources with scope cluster|namespace")
+	rootCmd.Flags().BoolVar(&ketallOptions.UseCache, constants.FlagUseCache, false, "use cached list of server resources")
+	rootCmd.Flags().StringVar(&ketallOptions.Scope, constants.FlagScope, "", "only resources with scope cluster|namespace")
 
 	ketallOptions.GenericCliFlags.AddFlags(rootCmd.Flags())
 	ketallOptions.PrintFlags.AddFlags(rootCmd)
 
+	err := viper.BindPFlags(rootCmd.Flags())
+	if err != nil {
+		logrus.Errorf("Cannot bind flags: %s", err)
+	}
+
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		if err := SetUpLogs(os.Stderr, v); err != nil {
+		if err := SetUpLogs(ketallOptions.Streams.ErrOut, v); err != nil {
 			return err
 		}
 		return nil
@@ -95,22 +100,17 @@ func init() {
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	if ketallOptions.CfgFile != "" {
-		// Use config file from the flag.
 		viper.SetConfigFile(ketallOptions.CfgFile)
 	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			logrus.Warnf("Could not read home dir: %s", err)
-			return
-		}
-
-		// Search config in "~/.kube/ketall" (without extension).
-		viper.AddConfigPath(filepath.Join(home, ".kube"))
+		// Search for "ketall.yaml" in "." and "~/.kube/"
+		viper.AddConfigPath(".")
+		viper.AddConfigPath(filepath.Join(homedir.HomeDir(), ".kube"))
 		viper.SetConfigName("ketall")
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	// read in environment variables that match
+	viper.SetEnvPrefix("ketall")
+	viper.AutomaticEnv()
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {

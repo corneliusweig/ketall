@@ -14,10 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package pkg
+package constants
 
 import "github.com/sirupsen/logrus"
 
-var (
+const (
 	DefaultLogLevel = logrus.WarnLevel
+
+	FlagUseCache  = "cache"
+	FlagScope     = "only-scope"
+	FlagNamespace = "namespace"
 )
