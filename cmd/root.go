@@ -20,10 +20,10 @@ import (
 	"github.com/corneliusweig/ketall/pkg/options"
 	"github.com/sirupsen/logrus"
 	"io"
+	"k8s.io/client-go/util/homedir"
 	"path/filepath"
 
 	"github.com/corneliusweig/ketall/pkg"
-	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -83,6 +83,11 @@ func init() {
 	ketallOptions.GenericCliFlags.AddFlags(rootCmd.Flags())
 	ketallOptions.PrintFlags.AddFlags(rootCmd)
 
+	err := viper.BindPFlags(rootCmd.Flags())
+	if err != nil {
+		logrus.Errorf("Cannot bind flags: %s", err)
+	}
+
 	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
 		if err := SetUpLogs(ketallOptions.Streams.ErrOut, v); err != nil {
 			return err
@@ -94,22 +99,17 @@ func init() {
 // initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	if ketallOptions.CfgFile != "" {
-		// Use config file from the flag.
 		viper.SetConfigFile(ketallOptions.CfgFile)
 	} else {
-		// Find home directory.
-		home, err := homedir.Dir()
-		if err != nil {
-			logrus.Warnf("Could not read home dir: %s", err)
-			return
-		}
-
-		// Search config in "~/.kube/ketall" (without extension).
-		viper.AddConfigPath(filepath.Join(home, ".kube"))
+		// Search for "ketall.yaml" in "." and "~/.kube/"
+		viper.AddConfigPath(".")
+		viper.AddConfigPath(filepath.Join(homedir.HomeDir(), ".kube"))
 		viper.SetConfigName("ketall")
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	// read in environment variables that match
+	viper.SetEnvPrefix("ketall")
+	viper.AutomaticEnv()
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
