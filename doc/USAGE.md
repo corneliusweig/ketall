@@ -57,6 +57,15 @@ source <(ketall completion zsh)  # for zsh users
 ```
 Also see `ketall completion --help` for further instructions.
 
+## Configuration
+The command will look for the configuration file `ketall` (no extension) in `.` or `$HOME/.kube/`, unless overridden by the `--config` option.
+The following settings can be configured:
+```yaml
+only-scope: cluster
+namespace: default
+use-cache: true
+```
+
 ## Installation
 
 ### Via krew
