@@ -17,6 +17,7 @@ limitations under the License.
 package cmd
 
 import (
+	"github.com/corneliusweig/ketall/pkg/constants"
 	"github.com/corneliusweig/ketall/pkg/options"
 	"github.com/sirupsen/logrus"
 	"io"
@@ -74,11 +75,11 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&ketallOptions.CfgFile, pkg.FlagConfig, "", "config file (default is $HOME/.kube/ketall.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&v, pkg.FlagVerbosity, "v", pkg.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
+	rootCmd.PersistentFlags().StringVar(&ketallOptions.CfgFile, "config", "", "config file (default is $HOME/.kube/ketall.yaml)")
+	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", constants.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
 
-	rootCmd.Flags().BoolVar(&ketallOptions.UseCache, pkg.FlagUseCache, false, "use cached list of server resources")
-	rootCmd.Flags().StringVar(&ketallOptions.Scope, pkg.FlagScope, "", "only resources with scope cluster|namespace")
+	rootCmd.Flags().BoolVar(&ketallOptions.UseCache, constants.FlagUseCache, false, "use cached list of server resources")
+	rootCmd.Flags().StringVar(&ketallOptions.Scope, constants.FlagScope, "", "only resources with scope cluster|namespace")
 
 	ketallOptions.GenericCliFlags.AddFlags(rootCmd.Flags())
 	ketallOptions.PrintFlags.AddFlags(rootCmd)

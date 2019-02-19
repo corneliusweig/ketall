@@ -18,8 +18,9 @@ package client
 
 import (
 	"fmt"
-	"github.com/corneliusweig/ketall/pkg/options"
+	"github.com/corneliusweig/ketall/pkg/constants"
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -37,10 +38,11 @@ type groupResource struct {
 }
 
 // TODO rework client, so that it does not fail without cluster admin rights
-func GetAllServerResources(ketallOptions *options.KetallOptions) (runtime.Object, error) {
-	flags := ketallOptions.GenericCliFlags
+func GetAllServerResources(flags *genericclioptions.ConfigFlags) (runtime.Object, error) {
+	useCache := viper.GetBool(constants.FlagUseCache)
+	scope := viper.GetString(constants.FlagScope)
 
-	resNames, err := FetchAvailableResourceNames(ketallOptions.UseCache, ketallOptions.Scope, flags)
+	resNames, err := FetchAvailableResourceNames(useCache, scope, flags)
 	if err != nil {
 		return nil, errors.Wrap(err, "fetch available resources")
 	}
@@ -51,9 +53,8 @@ func GetAllServerResources(ketallOptions *options.KetallOptions) (runtime.Object
 		ResourceTypes(resNames...).
 		Latest()
 
-	ns := ketallOptions.GenericCliFlags.Namespace
-	if ns != nil && *ns != "" {
-		request.NamespaceParam(*ns)
+	if ns := viper.GetString(constants.FlagNamespace); ns != "" {
+		request.NamespaceParam(ns)
 	} else {
 		request.AllNamespaces(true)
 	}

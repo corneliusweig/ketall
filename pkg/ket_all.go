@@ -26,7 +26,7 @@ import (
 )
 
 func KetAll(ketallOptions *options.KetallOptions) {
-	all, err := client.GetAllServerResources(ketallOptions)
+	all, err := client.GetAllServerResources(ketallOptions.GenericCliFlags)
 	if err != nil {
 		logrus.Fatal(err)
 	}
