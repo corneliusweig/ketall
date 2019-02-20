@@ -55,18 +55,18 @@ When using the binaries for installation, also have a look at [doc/USAGE](doc/US
 
 #### Linux
 ```bash
-curl -Lo ketall https://github.com/corneliusweig/ketall/releases/download/v0.0.2/ketall-linux-amd64 &&
+curl -Lo ketall https://github.com/corneliusweig/ketall/releases/download/v0.0.3/ketall-linux-amd64 &&
   chmod +x ketall && mv ketall $GOPATH/bin/
 ```
 
 #### OSX
 ```bash
-curl -Lo ketall https://github.com/corneliusweig/ketall/releases/download/v0.0.2/ketall-darwin-amd64 &&
+curl -Lo ketall https://github.com/corneliusweig/ketall/releases/download/v0.0.3/ketall-darwin-amd64 &&
   chmod +x ketall && mv ketall $GOPATH/bin/
 ```
 
 #### Windows
-[https://github.com/corneliusweig/ketall/releases/download/v0.0.2/ketall-windows-amd64 ](https://github.com/corneliusweig/ketall/releases/download/v0.0.2/ketall-windows-amd64 )
+[https://github.com/corneliusweig/ketall/releases/download/v0.0.3/ketall-windows-amd64 ](https://github.com/corneliusweig/ketall/releases/download/v0.0.3/ketall-windows-amd64 )
 
 ### From source
 
