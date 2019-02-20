@@ -23,8 +23,8 @@ echo -n "Please enter the new tag: "
 read -r NEW_TAG
 
 
-find . -type f -not \( -path './hack/*' -o -path './.github/*' -o -path './out/*' \) -print0 |
-    xargs -0 sed -i "s:${OLD_TAG}:${NEW_TAG}:"
+find . -type f -not \( -path './hack/*' -o -path './.github/*' -o -path './out/*' -o -path './doc/releases/*' \) -print0 |
+    xargs -0 sed -i "s:${OLD_TAG}:${NEW_TAG}:g"
 
 echo "Please check what has changed:"
 echo "-------------------->8--------------------"

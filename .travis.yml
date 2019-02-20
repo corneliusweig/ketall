@@ -31,7 +31,9 @@ deploy:
     - out/ketall-windows-amd64.sha256
     - out/ketall-darwin-amd64
     - out/ketall-darwin-amd64.sha256
-    - out/v*.tar.gz
+    - out/bundle.tar.gz
+    - out/bundle.tar.gz.sha256
   skip_cleanup: true
   on:
-    tag: true
+    tags: true
+    branch: master
