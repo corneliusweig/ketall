@@ -21,8 +21,9 @@ BUILDDIR  := out
 PLATFORMS ?= linux windows darwin
 DISTFILE  := $(BUILDDIR)/$(VERSION).tar.gz
 TARGETS   := $(patsubst %,$(BUILDDIR)/$(PROJECT)-%-amd64,$(PLATFORMS))
+ASSETS    := $(BUILDDIR)/ketall-linux-amd64.gz $(BUILDDIR)/ketall-darwin-amd64.gz $(BUILDDIR)/ketall-windows-amd64.zip
 BUNDLE    := $(BUILDDIR)/bundle.tar.gz
-CHECKSUMS := $(patsubst %,%.sha256,$(TARGETS))
+CHECKSUMS := $(patsubst %,%.sha256,$(ASSETS))
 CHECKSUMS += $(BUNDLE).sha256
 
 VERSION_PACKAGE := $(REPOPATH)/pkg/version
@@ -53,6 +54,12 @@ dev: $(BUILDDIR)/ketall-linux-amd64
 $(BUILDDIR)/$(PROJECT)-%-amd64: $(GO_FILES) $(BUILDDIR)
 	GO111MODULE=on GOARCH=amd64 CGO_ENABLED=0 GOOS=$* go build -ldflags $(GO_LDFLAGS) -o $@ main.go
 
+%.zip: %
+	zip $@ $<
+
+%.gz: %
+	gzip --best -k $<
+
 $(BUNDLE): $(TARGETS)
 	tar czf $(BUNDLE) -C $(BUILDDIR) $(patsubst $(BUILDDIR)/%,%,$(TARGETS))
 
@@ -63,7 +70,7 @@ $(BUILDDIR):
 	shasum -a 256 $< > $@
 
 .PHONY: deploy
-deploy: $(CHECKSUMS)
+deploy: $(CHECKSUMS) $(ASSETS)
 	git archive --prefix="ketall-$(VERSION)/" --format=tar.gz HEAD > $(DISTFILE)
 
 .PHONY: clean
