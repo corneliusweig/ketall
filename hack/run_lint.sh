@@ -16,7 +16,7 @@
 
 set -euo pipefail
 
-HACK=$(realpath "$(dirname "${BASH_SOURCE[0]}")")
+HACK=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 if ! [[ -x "$GOPATH/bin/golangci-lint" ]]
 then
