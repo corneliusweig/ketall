@@ -52,6 +52,7 @@ help:
 	@echo '  - dev:      build the binary for the current platform'
 	@echo '  - help:     print this help'
 	@echo '  - install:  install the `ketall` binary in your gopath'
+	@echo '  - lint:     run golangci-lint
 	@echo '  - test:     run unit tests'
 
 .PHONY: coverage
@@ -70,6 +71,22 @@ $(BUILDDIR)/$(PROJECT)-%-amd64: $(GO_FILES) $(BUILDDIR)
 
 install: $(BUILDDIR)/$(PROJECT)-$(GOOS)-amd64
 	@mv -i $< $(GOPATH)/bin/
+
+.PHONY: lint
+lint:
+	@golangci-lint run \
+		--no-config \
+		-E goconst \
+		-E goimports \
+		-E gocritic \
+		-E golint \
+		-E interfacer \
+		-E maligned \
+		-E misspell \
+		-E unconvert \
+		-E unparam \
+		-D errcheck \
+		--skip-dirs hack
 
 %.zip: %
 	zip $@ $<
