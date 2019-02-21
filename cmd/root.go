@@ -20,12 +20,12 @@ import (
 	"io"
 	"path/filepath"
 
-	"github.com/corneliusweig/ketall/pkg/constants"
-	"github.com/corneliusweig/ketall/pkg/options"
+	"github.com/corneliusweig/ketall/pkg/ketall/constants"
+	"github.com/corneliusweig/ketall/pkg/ketall/options"
 	"github.com/sirupsen/logrus"
 	"k8s.io/client-go/util/homedir"
 
-	"github.com/corneliusweig/ketall/pkg"
+	"github.com/corneliusweig/ketall/pkg/ketall"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -70,7 +70,7 @@ var rootCmd = &cobra.Command{
 	Args:    cobra.NoArgs,
 	Example: ketallExamples,
 	Run: func(cmd *cobra.Command, args []string) {
-		pkg.KetAll(ketallOptions)
+		ketall.KetAll(ketallOptions)
 	},
 }
 

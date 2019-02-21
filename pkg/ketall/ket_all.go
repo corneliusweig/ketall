@@ -14,14 +14,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package pkg
+package ketall
 
 import (
 	"text/tabwriter"
 
-	"github.com/corneliusweig/ketall/pkg/client"
-	"github.com/corneliusweig/ketall/pkg/options"
-	"github.com/corneliusweig/ketall/pkg/printer"
+	"github.com/corneliusweig/ketall/pkg/ketall/client"
+	"github.com/corneliusweig/ketall/pkg/ketall/options"
+	"github.com/corneliusweig/ketall/pkg/ketall/printer"
 	"github.com/sirupsen/logrus"
 	"k8s.io/cli-runtime/pkg/genericclioptions/printers"
 )

@@ -20,7 +20,7 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/corneliusweig/ketall/pkg/version"
+	"github.com/corneliusweig/ketall/pkg/ketall/version"
 	"github.com/sirupsen/logrus"
 
 	"github.com/spf13/cobra"

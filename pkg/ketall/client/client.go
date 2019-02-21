@@ -22,7 +22,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/corneliusweig/ketall/pkg/constants"
+	"github.com/corneliusweig/ketall/pkg/ketall/constants"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"

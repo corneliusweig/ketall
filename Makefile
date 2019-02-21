@@ -28,7 +28,7 @@ BUNDLE    := $(BUILDDIR)/bundle.tar.gz
 CHECKSUMS := $(patsubst %,%.sha256,$(ASSETS))
 CHECKSUMS += $(BUNDLE).sha256
 
-VERSION_PACKAGE := $(REPOPATH)/pkg/version
+VERSION_PACKAGE := $(REPOPATH)/pkg/ketall/version
 
 GO_LDFLAGS :="
 GO_LDFLAGS += -X $(VERSION_PACKAGE).version=$(VERSION)
