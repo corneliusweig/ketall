@@ -56,7 +56,7 @@ help:
 	@echo '  - test:     run unit tests'
 
 .PHONY: coverage
-coverage: $(BUILD_DIR)
+coverage: $(BUILDDIR)
 	GO111MODULE=on go test -coverprofile=$(BUILDDIR)/coverage.txt -covermode=atomic ./...
 
 .PHONY: all
