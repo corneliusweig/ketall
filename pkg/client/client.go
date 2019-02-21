@@ -28,6 +28,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/genericclioptions/resource"
+	authv1 "k8s.io/client-go/kubernetes/typed/authorization/v1"
 	"sort"
 	"strings"
 )
@@ -48,15 +49,26 @@ func GetAllServerResources(flags *genericclioptions.ConfigFlags) (runtime.Object
 		return nil, errors.Wrap(err, "fetch available group resources")
 	}
 
-	resNames := extractRelevantResourceNames(grs, viper.GetStringSlice(constants.FlagExclude))
+	resources := extractRelevantResourceNames(grs, viper.GetStringSlice(constants.FlagExclude))
+
+	restConfig, _ := flags.ToRESTConfig()
+	authClient, _ := authv1.NewForConfig(restConfig)
+	allowed, err := CheckResourceAccessPar(authClient, resources)
+	if err != nil {
+		return nil, errors.Wrap(err, "check resource access")
+	}
+
+	allowedResourceTypes := ToResourceTypes(allowed)
+	logrus.Debugf("Resources to fetch: %s", allowedResourceTypes)
 
 	request := resource.NewBuilder(flags).
 		Unstructured().
 		SelectAllParam(true).
-		ResourceTypes(resNames...).
+		ResourceTypes(allowedResourceTypes...).
 		Latest()
 
 	if ns := viper.GetString(constants.FlagNamespace); ns != "" {
+		logrus.Debugf("Restricting to namespace %s", ns)
 		request.NamespaceParam(ns)
 	} else {
 		request.AllNamespaces(true)
@@ -126,11 +138,11 @@ func FetchAvailableGroupResources(cache bool, scope string, flags *genericcliopt
 	return grs, nil
 }
 
-func extractRelevantResourceNames(grs []groupResource, exclusions []string) []string {
+func extractRelevantResourceNames(grs []groupResource, exclusions []string) []groupResource {
 	sort.Stable(sortableGroupResource(grs))
 	forbidden := sets.NewString(exclusions...)
 
-	result := []string{}
+	result := []groupResource{}
 	for _, r := range grs {
 		name := r.fullName()
 		resourceIds := r.APIResource.ShortNames
@@ -139,10 +151,9 @@ func extractRelevantResourceNames(grs []groupResource, exclusions []string) []st
 			logrus.Debugf("Excluding %s", name)
 			continue
 		}
-		result = append(result, name)
+		result = append(result, r)
 	}
 
-	logrus.Debugf("Resources to fetch: %s", result)
 	return result
 }
 
@@ -171,6 +182,14 @@ func (g groupResource) fullName() string {
 }
 
 type sortableGroupResource []groupResource
+
+func ToResourceTypes(in []groupResource) []string {
+	result := []string{}
+	for _, r := range in {
+		result = append(result, r.fullName())
+	}
+	return result
+}
 
 func (s sortableGroupResource) Len() int      { return len(s) }
 func (s sortableGroupResource) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
