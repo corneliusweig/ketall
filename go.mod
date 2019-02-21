@@ -6,6 +6,8 @@ require (
 	github.com/evanphx/json-patch v4.1.0+incompatible // indirect
 	github.com/gogo/protobuf v1.2.0 // indirect
 	github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c // indirect
+	github.com/google/go-github v17.0.0+incompatible
+	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/google/gofuzz v0.0.0-20170612174753-24818f796faf // indirect
 	github.com/googleapis/gnostic v0.2.0 // indirect
 	github.com/gregjones/httpcache v0.0.0-20190212212710-3befbb6ad0cc // indirect
@@ -20,11 +22,11 @@ require (
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.1
 	github.com/stretchr/testify v1.2.2
-	golang.org/x/net v0.0.0-20190213061140-3a22650c66bd // indirect
-        golang.org/x/oauth2 v0.0.0-20190212230446-3e8b2be13635
+	golang.org/x/oauth2 v0.0.0-20190212230446-3e8b2be13635
 	golang.org/x/time v0.0.0-20181108054448-85acf8d2951c // indirect
+	golang.org/x/tools v0.0.0-20190221180947-9c8c5aeafa05 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
-        k8s.io/api v0.0.0-20181121191454-a61488babbd6
+	k8s.io/api v0.0.0-20181121191454-a61488babbd6
 	k8s.io/apimachinery v0.0.0-20190211022232-e355a776c090
 	k8s.io/cli-runtime v0.0.0-20190202014047-491c94071cfa
 	k8s.io/client-go v10.0.0+incompatible

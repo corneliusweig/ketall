@@ -74,8 +74,8 @@ func TestExtractRelevantResourceNames(t *testing.T) {
 				})
 			}
 
-			names := extractRelevantResourceNames(grs, test.exclude)
-			assert.Equal(t, test.expected, names)
+			names := extractRelevantResources(grs, test.exclude)
+			assert.Equal(t, test.expected, ToResourceTypes(names))
 		})
 	}
 }
