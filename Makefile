@@ -74,19 +74,7 @@ install: $(BUILDDIR)/$(PROJECT)-$(GOOS)-amd64
 
 .PHONY: lint
 lint:
-	@golangci-lint run \
-		--no-config \
-		-E goconst \
-		-E goimports \
-		-E gocritic \
-		-E golint \
-		-E interfacer \
-		-E maligned \
-		-E misspell \
-		-E unconvert \
-		-E unparam \
-		-D errcheck \
-		--skip-dirs hack
+	hack/run_lint.sh
 
 %.zip: %
 	zip $@ $<
