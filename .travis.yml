@@ -12,8 +12,9 @@ env:
 
 script:
   - make test
-  - make dev
   - make coverage
+  - make lint
+  - make dev
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
