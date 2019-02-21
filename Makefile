@@ -28,7 +28,7 @@ BUNDLE    := $(BUILDDIR)/bundle.tar.gz
 CHECKSUMS := $(patsubst %,%.sha256,$(ASSETS))
 CHECKSUMS += $(BUNDLE).sha256
 
-VERSION_PACKAGE := $(REPOPATH)/pkg/version
+VERSION_PACKAGE := $(REPOPATH)/pkg/ketall/version
 
 GO_LDFLAGS :="
 GO_LDFLAGS += -X $(VERSION_PACKAGE).version=$(VERSION)
@@ -52,10 +52,11 @@ help:
 	@echo '  - dev:      build the binary for the current platform'
 	@echo '  - help:     print this help'
 	@echo '  - install:  install the `ketall` binary in your gopath'
+	@echo '  - lint:     run golangci-lint
 	@echo '  - test:     run unit tests'
 
 .PHONY: coverage
-coverage: $(BUILD_DIR)
+coverage: $(BUILDDIR)
 	GO111MODULE=on go test -coverprofile=$(BUILDDIR)/coverage.txt -covermode=atomic ./...
 
 .PHONY: all
@@ -70,6 +71,10 @@ $(BUILDDIR)/$(PROJECT)-%-amd64: $(GO_FILES) $(BUILDDIR)
 
 install: $(BUILDDIR)/$(PROJECT)-$(GOOS)-amd64
 	@mv -i $< $(GOPATH)/bin/
+
+.PHONY: lint
+lint:
+	hack/run_lint.sh
 
 %.zip: %
 	zip $@ $<

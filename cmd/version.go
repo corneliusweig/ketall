@@ -17,16 +17,17 @@ limitations under the License.
 package cmd
 
 import (
-	"github.com/corneliusweig/ketall/pkg/version"
-	"github.com/sirupsen/logrus"
 	"os"
 	"text/template"
+
+	"github.com/corneliusweig/ketall/pkg/ketall/version"
+	"github.com/sirupsen/logrus"
 
 	"github.com/spf13/cobra"
 )
 
 const (
-	versionTemplate  = `{{.Version}}
+	versionTemplate = `{{.Version}}
 `
 	fullInfoTemplate = `ketall:     {{.Version}}
 platform:   {{.Platform}}

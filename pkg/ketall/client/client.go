@@ -18,20 +18,21 @@ package client
 
 import (
 	"fmt"
-	"github.com/corneliusweig/ketall/pkg/constants"
+	"sort"
+	"strings"
+	"sync"
+
+	"github.com/corneliusweig/ketall/pkg/ketall/constants"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/genericclioptions/resource"
-	"sort"
-	"strings"
-	"sync"
 )
 
 // groupResource contains the APIGroup and APIResource
@@ -132,7 +133,7 @@ func extractRelevantResources(grs []groupResource, exclusions []string) []groupR
 }
 
 // Fetches all objects in bulk. This is much faster than incrementally but may fail due to missing rights
-func fetchResourcesBulk(flags *genericclioptions.ConfigFlags, resourceTypes ...groupResource) (runtime.Object, error) {
+func fetchResourcesBulk(flags resource.RESTClientGetter, resourceTypes ...groupResource) (runtime.Object, error) {
 	resourceNames := ToResourceTypes(resourceTypes)
 	logrus.Debugf("Resources to fetch: %s", resourceNames)
 
@@ -151,7 +152,7 @@ func fetchResourcesBulk(flags *genericclioptions.ConfigFlags, resourceTypes ...g
 }
 
 // Fetches all objects of the given resources one-by-one. This can be used as a fallback when fetchResourcesBulk fails.
-func fetchResourcesIncremental(flags *genericclioptions.ConfigFlags, rs ...groupResource) (runtime.Object, error) {
+func fetchResourcesIncremental(flags resource.RESTClientGetter, rs ...groupResource) (runtime.Object, error) {
 	logrus.Debug("Fetch resources incrementally")
 	group := sync.WaitGroup{}
 
@@ -182,7 +183,7 @@ func fetchResourcesIncremental(flags *genericclioptions.ConfigFlags, rs ...group
 	close(objsChan)
 
 	if len(objs) == 0 {
-		return nil, fmt.Errorf("Not authorized to list any resources. Try to narrow the scope with --namespace.")
+		return nil, fmt.Errorf("not authorized to list any resources, try to narrow the scope with --namespace")
 	}
 
 	return toV1List(objs), nil

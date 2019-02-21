@@ -18,11 +18,12 @@ package options
 
 import (
 	"bytes"
-	"github.com/corneliusweig/ketall/pkg/printer"
+	"os"
+
+	"github.com/corneliusweig/ketall/pkg/ketall/printer"
 	"github.com/sirupsen/logrus"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/genericclioptions/printers"
-	"os"
 )
 
 type KetallOptions struct {
@@ -39,7 +40,11 @@ func NewCmdOptions() *KetallOptions {
 	return &KetallOptions{
 		GenericCliFlags: genericclioptions.NewConfigFlags(),
 		PrintFlags:      KAPrintFlags{genericclioptions.NewPrintFlags("")},
-		Streams:         &genericclioptions.IOStreams{os.Stdin, os.Stdout, os.Stderr},
+		Streams: &genericclioptions.IOStreams{
+			In:     os.Stdin,
+			Out:    os.Stdout,
+			ErrOut: os.Stderr,
+		},
 	}
 }
 

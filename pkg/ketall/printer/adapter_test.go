@@ -19,11 +19,12 @@ package printer
 import (
 	"bytes"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"io"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"testing"
 )
 
 type mockObject struct {
@@ -47,12 +48,12 @@ func (o *mockObject) DeepCopyObject() runtime.Object {
 	return &clone
 }
 
-func (c *mockObject) GroupVersionKind() schema.GroupVersionKind {
-	return c.gvk
+func (o *mockObject) GroupVersionKind() schema.GroupVersionKind {
+	return o.gvk
 }
 
-func (c *mockObject) SetGroupVersionKind(gvk schema.GroupVersionKind) {
-	c.gvk = gvk
+func (o *mockObject) SetGroupVersionKind(gvk schema.GroupVersionKind) {
+	o.gvk = gvk
 }
 
 type mockList struct {
