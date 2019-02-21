@@ -16,6 +16,8 @@ PROJECT   ?= ketall
 REPOPATH  ?= github.com/corneliusweig/$(PROJECT)
 COMMIT    := $(shell git rev-parse HEAD)
 VERSION   ?= $(shell git describe --always --tags --dirty)
+GOOS      ?= $(shell go env GOOS)
+GOPATH    ?= $(shell go env GOPATH)
 
 BUILDDIR  := out
 PLATFORMS ?= linux windows darwin
@@ -40,6 +42,18 @@ GO_FILES  := $(shell find . -type f -name '*.go')
 test:
 	GO111MODULE=on go test ./...
 
+.PHONY: help
+help:
+	@echo 'Valid make targets:'
+	@echo '  - all:      build binaries for all supported platforms'
+	@echo '  - clean:    clean up build directory'
+	@echo '  - coverage: run unit tests with coverage'
+	@echo '  - deploy:   build artifacts for a new deployment'
+	@echo '  - dev:      build the binary for the current platform'
+	@echo '  - help:     print this help'
+	@echo '  - install:  install the `ketall` binary in your gopath'
+	@echo '  - test:     run unit tests'
+
 .PHONY: coverage
 coverage: $(BUILD_DIR)
 	GO111MODULE=on go test -coverprofile=$(BUILDDIR)/coverage.txt -covermode=atomic ./...
@@ -53,6 +67,9 @@ dev: $(BUILDDIR)/ketall-linux-amd64
 
 $(BUILDDIR)/$(PROJECT)-%-amd64: $(GO_FILES) $(BUILDDIR)
 	GO111MODULE=on GOARCH=amd64 CGO_ENABLED=0 GOOS=$* go build -ldflags $(GO_LDFLAGS) -o $@ main.go
+
+install: $(BUILDDIR)/$(PROJECT)-$(GOOS)-amd64
+	@mv -i $< $(GOPATH)/bin/
 
 %.zip: %
 	zip $@ $<
