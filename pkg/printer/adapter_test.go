@@ -48,12 +48,12 @@ func (o *mockObject) DeepCopyObject() runtime.Object {
 	return &clone
 }
 
-func (c *mockObject) GroupVersionKind() schema.GroupVersionKind {
-	return c.gvk
+func (o *mockObject) GroupVersionKind() schema.GroupVersionKind {
+	return o.gvk
 }
 
-func (c *mockObject) SetGroupVersionKind(gvk schema.GroupVersionKind) {
-	c.gvk = gvk
+func (o *mockObject) SetGroupVersionKind(gvk schema.GroupVersionKind) {
+	o.gvk = gvk
 }
 
 type mockList struct {

@@ -40,7 +40,11 @@ func NewCmdOptions() *KetallOptions {
 	return &KetallOptions{
 		GenericCliFlags: genericclioptions.NewConfigFlags(),
 		PrintFlags:      KAPrintFlags{genericclioptions.NewPrintFlags("")},
-		Streams:         &genericclioptions.IOStreams{os.Stdin, os.Stdout, os.Stderr},
+		Streams: &genericclioptions.IOStreams{
+			In:     os.Stdin,
+			Out:    os.Stdout,
+			ErrOut: os.Stderr,
+		},
 	}
 }
 
