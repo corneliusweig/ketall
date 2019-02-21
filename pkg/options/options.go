@@ -18,11 +18,12 @@ package options
 
 import (
 	"bytes"
+	"os"
+
 	"github.com/corneliusweig/ketall/pkg/printer"
 	"github.com/sirupsen/logrus"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/genericclioptions/printers"
-	"os"
 )
 
 type KetallOptions struct {

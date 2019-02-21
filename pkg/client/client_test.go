@@ -17,9 +17,10 @@ limitations under the License.
 package client
 
 import (
-	"github.com/stretchr/testify/assert"
-	"k8s.io/apimachinery/pkg/apis/meta/v1"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func TestExtractRelevantResourceNames(t *testing.T) {

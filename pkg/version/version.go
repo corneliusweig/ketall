@@ -18,9 +18,10 @@ package version
 
 import (
 	"fmt"
-	"github.com/blang/semver"
 	"runtime"
 	"strings"
+
+	"github.com/blang/semver"
 )
 
 var version, gitCommit, buildDate string

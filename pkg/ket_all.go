@@ -17,12 +17,13 @@ limitations under the License.
 package pkg
 
 import (
+	"text/tabwriter"
+
 	"github.com/corneliusweig/ketall/pkg/client"
 	"github.com/corneliusweig/ketall/pkg/options"
 	"github.com/corneliusweig/ketall/pkg/printer"
 	"github.com/sirupsen/logrus"
 	"k8s.io/cli-runtime/pkg/genericclioptions/printers"
-	"text/tabwriter"
 )
 
 func KetAll(ketallOptions *options.KetallOptions) {

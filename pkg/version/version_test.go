@@ -17,8 +17,9 @@ limitations under the License.
 package version
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/blang/semver"
 )

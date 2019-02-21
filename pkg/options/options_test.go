@@ -17,11 +17,12 @@ limitations under the License.
 package options
 
 import (
+	"testing"
+
 	"github.com/corneliusweig/ketall/pkg/printer"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/genericclioptions/printers"
-	"testing"
 )
 
 func TestKAPrintFlags_ToPrinter(t *testing.T) {

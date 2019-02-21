@@ -18,20 +18,21 @@ package client
 
 import (
 	"fmt"
+	"sort"
+	"strings"
+	"sync"
+
 	"github.com/corneliusweig/ketall/pkg/constants"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/genericclioptions/resource"
-	"sort"
-	"strings"
-	"sync"
 )
 
 // groupResource contains the APIGroup and APIResource

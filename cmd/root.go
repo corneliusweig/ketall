@@ -17,12 +17,13 @@ limitations under the License.
 package cmd
 
 import (
+	"io"
+	"path/filepath"
+
 	"github.com/corneliusweig/ketall/pkg/constants"
 	"github.com/corneliusweig/ketall/pkg/options"
 	"github.com/sirupsen/logrus"
-	"io"
 	"k8s.io/client-go/util/homedir"
-	"path/filepath"
 
 	"github.com/corneliusweig/ketall/pkg"
 	"github.com/pkg/errors"

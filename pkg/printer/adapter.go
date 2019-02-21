@@ -17,9 +17,10 @@ limitations under the License.
 package printer
 
 import (
+	"io"
+
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"io"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
