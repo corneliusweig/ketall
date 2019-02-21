@@ -69,9 +69,6 @@ func printObj(o runtime.Object, w io.Writer) error {
 	name := fullName(acc.GetName(), groupKind)
 	timestamp := acc.GetCreationTimestamp()
 	namespace := acc.GetNamespace()
-	if namespace == "" {
-		namespace = "<n/a>"
-	}
 	if _, err := fmt.Fprintf(w, tableRow, name, namespace, translateTimestampSince(timestamp)); err != nil {
 		return err
 	}
