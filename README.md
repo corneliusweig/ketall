@@ -98,10 +98,7 @@ docker rmi ketall-builder
 Binaries will be placed in the current directory.
 
 ## Future
-- Currently, `ketall` requires the rights to list all server resources, which is quite unrealistic for non-admins.
-Instead, `ketall` should show all resources that can be accessed.
-
-- additional arguments should be used to filter the result set
+- additional arguments could be used to filter the result set
 
 - need to verify that this works for CRD
 
