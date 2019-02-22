@@ -7,14 +7,16 @@ If you installed via [krew](https://github.com/GoogleContainerTools/krew) do
 ```bash
 kubectl get-all
 ```
-Because this tries to access __all__ resources, you must have unrestricted access to the cluster, or the command will fail due to missing rights.
 
 ## Options
 
 - `--only-scope=cluster` will only show cluster level resources, such as `ClusterRole`, `Namespace`, or `PersistentVolume`.
 - `--only-scope=namespace` will only show namespaced resources, such as `ServiceAccount`, `Role`, `ConfigMap`, or `Endpoint`.
 - `--use-cache` will consider the http cache to determine the server resources to look at. Disabled by default.
+- `--exclude` will filter out the given resources (either plural names `componentstatuses` or short form `cs`). Defaults to `events` because those are rarely useful.
 - ...and many standard `kubectl` options. Have a look at `kubectl get-all --help` for a full list of supported flags.
+
+**Hint**: If you do not have access to all resources, bulk fetching needs to be disabled. You can speed things up by explicitly excluding all resources which you may not access.
 
 ## Examples
 Get all resources...

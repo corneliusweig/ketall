@@ -44,7 +44,7 @@ Ketall retrieves all resources which allow to be fetched. This complements the
 usual "kubectl get all" command, which excludes all cluster-level and some
 namespaced resources.
 
-More on https://github.com/corneliusweig/ketall/blob/v0.0.3/doc/USAGE.md
+More on https://github.com/corneliusweig/ketall/blob/v1.0.0/doc/USAGE.md#usage
 `
 	ketallExamples = `
   Get all resources, excluding events
