@@ -18,9 +18,11 @@ package client
 
 import (
 	"fmt"
+	"k8s.io/apimachinery/pkg/util/duration"
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/corneliusweig/ketall/pkg/ketall/constants"
 	"github.com/pkg/errors"
@@ -52,7 +54,9 @@ func GetAllServerResources(flags *genericclioptions.ConfigFlags) (runtime.Object
 
 	resources := extractRelevantResources(grs, viper.GetStringSlice(constants.FlagExclude))
 
+	start := time.Now()
 	response, err := fetchResourcesBulk(flags, resources...)
+	logrus.Debugf("Initial fetchResourcesBulk done (%s)", duration.HumanDuration(time.Since(start)))
 	if err == nil {
 		return response, nil
 	}
@@ -170,17 +174,17 @@ func fetchResourcesIncremental(flags resource.RESTClientGetter, rs ...groupResou
 		}(objsChan)
 	}
 
-	var objs []runtime.Object
-	go func(recvObj <-chan runtime.Object) {
-		for o := range recvObj {
-			objs = append(objs, o)
-		}
-	}(objsChan)
+	go func() {
+		start := time.Now()
+		group.Wait()
+		close(objsChan)
+		logrus.Debugf("Requests done (elapsed %s)", duration.HumanDuration(time.Since(start)))
+	}()
 
-	logrus.Debug("Wait for resource requests")
-	group.Wait()
-	logrus.Debug("Resource requests all done")
-	close(objsChan)
+	var objs []runtime.Object
+	for o := range objsChan {
+		objs = append(objs, o)
+	}
 
 	if len(objs) == 0 {
 		return nil, fmt.Errorf("not authorized to list any resources, try to narrow the scope with --namespace")
