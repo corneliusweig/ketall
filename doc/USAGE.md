@@ -15,6 +15,7 @@ kubectl get-all
 - `--use-cache` will consider the http cache to determine the server resources to look at. Disabled by default.
 - `--exclude` will filter out the given resources (either plural names `componentstatuses` or short form `cs`). Defaults to `events` because those are rarely useful.
 - ...and many standard `kubectl` options. Have a look at `kubectl get-all --help` for a full list of supported flags.
+- `--verbosity` set the log level (one of debug, info, warn, error, fatal, panic).
 
 **Hint**: If you do not have access to all resources, bulk fetching needs to be disabled. You can speed things up by explicitly excluding all resources which you may not access.
 
@@ -89,7 +90,7 @@ kubectl krew install get-all
 ### As `kubectl` plugin
 Most users will have installed `ketall` via [krew](https://github.com/GoogleContainerTools/krew),
 so the plugin is already correctly installed.
-Otherwise, rename `ketall` to `kubectl-get_all` and but it in some directory from your `$PATH` variable.
+Otherwise, rename `ketall` to `kubectl-get_all` and put it in some directory from your `$PATH` variable.
 Then you can invoke the plugin via `kubectl get-all`
 
 ### Standalone
