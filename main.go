@@ -16,7 +16,10 @@ limitations under the License.
 
 package main
 
-import "github.com/corneliusweig/ketall/cmd"
+import (
+	"github.com/corneliusweig/ketall/cmd"
+	_ "k8s.io/client-go/plugin/pkg/client/auth"
+)
 
 func main() {
 	cmd.Execute()
