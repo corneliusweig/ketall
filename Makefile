@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+export GO111MODULE ?= on
+export GOARCH      ?= amd64
+export CGO_ENABLED ?= 0
+
 PROJECT   ?= ketall
 REPOPATH  ?= github.com/corneliusweig/$(PROJECT)
 COMMIT    := $(shell git rev-parse HEAD)
@@ -22,15 +26,15 @@ GOPATH    ?= $(shell go env GOPATH)
 BUILDDIR  := out
 PLATFORMS ?= linux windows darwin
 DISTFILE  := $(BUILDDIR)/$(VERSION).tar.gz
-TARGETS   := $(patsubst %,$(BUILDDIR)/$(PROJECT)-%-amd64,$(PLATFORMS))
-ASSETS    := $(BUILDDIR)/ketall-linux-amd64.gz $(BUILDDIR)/ketall-darwin-amd64.gz $(BUILDDIR)/ketall-windows-amd64.zip
+TARGETS   := $(patsubst %,$(BUILDDIR)/$(PROJECT)-%-$(GOARCH),$(PLATFORMS))
+ASSETS    := $(BUILDDIR)/ketall-linux-$(GOARCH).gz $(BUILDDIR)/ketall-darwin-$(GOARCH).gz $(BUILDDIR)/ketall-windows-$(GOARCH).zip
 BUNDLE    := $(BUILDDIR)/bundle.tar.gz
 CHECKSUMS := $(patsubst %,%.sha256,$(ASSETS))
 CHECKSUMS += $(BUNDLE).sha256
 
 VERSION_PACKAGE := $(REPOPATH)/pkg/ketall/version
 
-GO_LDFLAGS :="
+GO_LDFLAGS :="-s -w
 GO_LDFLAGS += -X $(VERSION_PACKAGE).version=$(VERSION)
 GO_LDFLAGS += -X $(VERSION_PACKAGE).buildDate=$(shell date +'%Y-%m-%dT%H:%M:%SZ')
 GO_LDFLAGS += -X $(VERSION_PACKAGE).gitCommit=$(COMMIT)
@@ -40,7 +44,7 @@ GO_FILES  := $(shell find . -type f -name '*.go')
 
 .PHONY: test
 test:
-	GO111MODULE=on go test ./...
+	go test ./...
 
 .PHONY: help
 help:
@@ -57,19 +61,22 @@ help:
 
 .PHONY: coverage
 coverage: $(BUILDDIR)
-	GO111MODULE=on go test -coverprofile=$(BUILDDIR)/coverage.txt -covermode=atomic ./...
+	go test -coverprofile=$(BUILDDIR)/coverage.txt -covermode=atomic ./...
 
 .PHONY: all
 all: $(TARGETS)
 
 .PHONY: dev
-dev: $(BUILDDIR)/ketall-linux-amd64
+dev: GO_FLAGS := -race
+dev: CGO_ENABLED := 1
+dev: GO_LDFLAGS := $(subst -s -w,,$(GO_LDFLAGS))
+dev: $(BUILDDIR)/ketall-linux-$(GOARCH)
 	@mv $< $(PROJECT)
 
-$(BUILDDIR)/$(PROJECT)-%-amd64: $(GO_FILES) $(BUILDDIR)
-	GO111MODULE=on GOARCH=amd64 CGO_ENABLED=0 GOOS=$* go build -ldflags $(GO_LDFLAGS) -o $@ main.go
+$(BUILDDIR)/$(PROJECT)-%-$(GOARCH): $(GO_FILES) $(BUILDDIR)
+	GOOS=$* go build $(GO_FLAGS) -ldflags $(GO_LDFLAGS) -o $@ main.go
 
-install: $(BUILDDIR)/$(PROJECT)-$(GOOS)-amd64
+install: $(BUILDDIR)/$(PROJECT)-$(GOOS)-$(GOARCH)
 	@mv -i $< $(GOPATH)/bin/$(PROJECT)
 
 .PHONY: lint
