@@ -67,13 +67,14 @@ coverage: $(BUILDDIR)
 all: $(TARGETS)
 
 .PHONY: dev
+dev: GO_FLAGS := -race
 dev: CGO_ENABLED := 1
 dev: GO_LDFLAGS := $(subst -s -w,,$(GO_LDFLAGS))
 dev: $(BUILDDIR)/ketall-linux-$(GOARCH)
 	@mv $< $(PROJECT)
 
 $(BUILDDIR)/$(PROJECT)-%-$(GOARCH): $(GO_FILES) $(BUILDDIR)
-	GOOS=$* go build -ldflags $(GO_LDFLAGS) -o $@ main.go
+	GOOS=$* go build $(GO_FLAGS) -ldflags $(GO_LDFLAGS) -o $@ main.go
 
 install: $(BUILDDIR)/$(PROJECT)-$(GOOS)-$(GOARCH)
 	@mv -i $< $(GOPATH)/bin/$(PROJECT)
