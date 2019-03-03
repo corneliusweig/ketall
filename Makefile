@@ -87,7 +87,7 @@ lint:
 	zip $@ $<
 
 %.gz: %
-	gzip --best -k $<
+	zopfli $<
 
 $(BUNDLE): $(TARGETS)
 	tar czf $(BUNDLE) -C $(BUILDDIR) $(patsubst $(BUILDDIR)/%,%,$(TARGETS))
