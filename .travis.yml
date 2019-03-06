@@ -26,12 +26,12 @@ deploy:
   provider: releases
   api_key: $GITHUB_OAUTH_TOKEN
   file:
-    - out/ketall-linux-amd64
-    - out/ketall-linux-amd64.sha256
-    - out/ketall-windows-amd64
-    - out/ketall-windows-amd64.sha256
-    - out/ketall-darwin-amd64
-    - out/ketall-darwin-amd64.sha256
+    - out/ketall-linux-amd64.gz
+    - out/ketall-linux-amd64.gz.sha256
+    - out/ketall-windows-amd64.gz
+    - out/ketall-windows-amd64.gz.sha256
+    - out/ketall-darwin-amd64.gz
+    - out/ketall-darwin-amd64.gz.sha256
     - out/bundle.tar.gz
     - out/bundle.tar.gz.sha256
   skip_cleanup: true
