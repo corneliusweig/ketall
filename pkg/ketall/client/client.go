@@ -24,10 +24,10 @@ import (
 	"time"
 
 	"github.com/corneliusweig/ketall/pkg/ketall/constants"
+	"github.com/corneliusweig/ketall/pkg/ketall/util"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -190,15 +190,7 @@ func fetchResourcesIncremental(flags resource.RESTClientGetter, rs ...groupResou
 		return nil, fmt.Errorf("not authorized to list any resources, try to narrow the scope with --namespace")
 	}
 
-	return toV1List(objs), nil
-}
-
-func toV1List(objects []runtime.Object) runtime.Object {
-	var raw []runtime.RawExtension
-	for _, o := range objects {
-		raw = append(raw, runtime.RawExtension{Object: o})
-	}
-	return &v1.List{Items: raw}
+	return util.ToV1List(objs), nil
 }
 
 func getResourceScope(scope string) (skipCluster, skipNamespace bool, err error) {
