@@ -42,9 +42,9 @@ Get all resources...
   kubectl get-all --only-scope=cluster
   ```
 
-- ... in some namespace
+- ... in the default namespace
   ```bash
-  kubectl get-all --only-scope=namespace --namespace=my-namespace
+  kubectl get-all --namespace=default
   ```
 
 - ... using list of cached server resources

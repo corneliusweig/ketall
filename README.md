@@ -31,9 +31,9 @@ Get all resources...
   ```
   This flag understands typical human-readable durations such as `1m` or `1y1d1h1m1s`.
 
-- ... in some namespace
+- ... in the default namespace
   ```bash
-  ketall --only-scope=namespace --namespace=my-namespace
+  ketall --namespace=default
   ```
 
 - ... using list of cached server resources
