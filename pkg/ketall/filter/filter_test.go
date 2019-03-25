@@ -18,13 +18,14 @@ package filter
 
 import (
 	"fmt"
+	"testing"
+	"time"
+
 	"github.com/corneliusweig/ketall/pkg/ketall/util"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	"testing"
-	"time"
 )
 
 type FakeV1Obj struct {
@@ -76,7 +77,7 @@ func TestFilterByPredicate(t *testing.T) {
 
 			predicate, _ := AgePredicate(test.humanDuration)
 
-			filtered, err := FilterByPredicate(util.ToV1List(givenObjs), predicate)
+			filtered, err := ByPredicate(util.ToV1List(givenObjs), predicate)
 			actualObjs, _ := meta.ExtractList(filtered)
 			assert.NoError(t, err)
 			assert.Equal(t, test.expectedNames, toNames(actualObjs))

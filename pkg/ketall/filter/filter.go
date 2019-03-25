@@ -43,7 +43,7 @@ func ApplyFilter(o runtime.Object) runtime.Object {
 		return o
 	}
 
-	filtered, err := FilterByPredicate(o, predicate)
+	filtered, err := ByPredicate(o, predicate)
 	if err != nil {
 		logrus.Warnf("%s", errors.Wrapf(err, "filtering failed"))
 		return o
@@ -52,7 +52,7 @@ func ApplyFilter(o runtime.Object) runtime.Object {
 	return filtered
 }
 
-func FilterByPredicate(o runtime.Object, p Predicate) (runtime.Object, error) {
+func ByPredicate(o runtime.Object, p Predicate) (runtime.Object, error) {
 	if !meta.IsListType(o) {
 		if p(o) {
 			return o, nil
@@ -67,7 +67,7 @@ func FilterByPredicate(o runtime.Object, p Predicate) (runtime.Object, error) {
 
 	var items []runtime.Object
 	for _, item := range allItems {
-		item, err := FilterByPredicate(item, p)
+		item, err := ByPredicate(item, p)
 		if err != nil {
 			return nil, err
 		}
