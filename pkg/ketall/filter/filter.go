@@ -21,15 +21,36 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/sirupsen/logrus"
-
+	"github.com/corneliusweig/ketall/pkg/ketall/constants"
 	"github.com/corneliusweig/ketall/pkg/ketall/util"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
 type Predicate = func(runtime.Object) bool
+
+func ApplyFilter(o runtime.Object) runtime.Object {
+	since := viper.GetString(constants.FlagSince)
+
+	logrus.Debugf("Found %s argument %s", constants.FlagSince, since)
+
+	predicate, err := AgePredicate(since)
+	if err != nil {
+		logrus.Warnf("%s", errors.Wrapf(err, "skipping filter"))
+		return o
+	}
+
+	filtered, err := FilterByPredicate(o, predicate)
+	if err != nil {
+		logrus.Warnf("%s", errors.Wrapf(err, "filtering failed"))
+		return o
+	}
+
+	return filtered
+}
 
 func FilterByPredicate(o runtime.Object, p Predicate) (runtime.Object, error) {
 	if !meta.IsListType(o) {

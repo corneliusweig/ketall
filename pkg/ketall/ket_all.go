@@ -20,6 +20,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/corneliusweig/ketall/pkg/ketall/client"
+	"github.com/corneliusweig/ketall/pkg/ketall/filter"
 	"github.com/corneliusweig/ketall/pkg/ketall/options"
 	"github.com/corneliusweig/ketall/pkg/ketall/printer"
 	"github.com/sirupsen/logrus"
@@ -31,6 +32,8 @@ func KetAll(ketallOptions *options.KetallOptions) {
 	if err != nil {
 		logrus.Fatal(err)
 	}
+
+	filtered := filter.ApplyFilter(all)
 
 	resourcePrinter, err := ketallOptions.PrintFlags.ToPrinter()
 	if err != nil {
@@ -59,7 +62,7 @@ func KetAll(ketallOptions *options.KetallOptions) {
 		p = printer.NewFlattenListAdapterPrinter(pr)
 	}
 
-	if err = p.PrintObj(all, out); err != nil {
+	if err = p.PrintObj(filtered, out); err != nil {
 		logrus.Fatal(err)
 	}
 }

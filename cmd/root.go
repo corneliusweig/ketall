@@ -88,6 +88,7 @@ func init() {
 
 	rootCmd.Flags().BoolVar(&ketallOptions.UseCache, constants.FlagUseCache, false, "use cached list of server resources")
 	rootCmd.Flags().StringVar(&ketallOptions.Scope, constants.FlagScope, "", "only resources with scope cluster|namespace")
+	rootCmd.Flags().StringVar(&ketallOptions.Since, constants.FlagSince, "", "only resources younger than given age")
 	rootCmd.Flags().StringSliceVar(&ketallOptions.Exclusions, constants.FlagExclude, []string{"events"}, "filter by resource name (plural form or short name)")
 
 	ketallOptions.GenericCliFlags.AddFlags(rootCmd.Flags())
