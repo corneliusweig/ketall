@@ -21,8 +21,9 @@ import "github.com/sirupsen/logrus"
 const (
 	DefaultLogLevel = logrus.WarnLevel
 
-	FlagUseCache  = "use-cache"
-	FlagScope     = "only-scope"
 	FlagExclude   = "exclude"
 	FlagNamespace = "namespace"
+	FlagScope     = "only-scope"
+	FlagSince     = "since"
+	FlagUseCache  = "use-cache"
 )
