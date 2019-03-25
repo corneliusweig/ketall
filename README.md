@@ -111,7 +111,5 @@ Binaries will be placed in the current directory.
 ## Future
 - additional arguments could be used to filter the result set
 
-- need to verify that this works for CRD
-
 ### Credits
 Idea by @ahmetb https://twitter.com/ahmetb/status/1095374856156196864
