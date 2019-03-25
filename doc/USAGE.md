@@ -37,14 +37,14 @@ Get all resources...
   ```
   This flag understands typical human-readable durations such as `1m` or `1y1d1h1m1s`.
 
-- ... at cluster level
-  ```bash
-  kubectl get-all --only-scope=cluster
-  ```
-
 - ... in the default namespace
   ```bash
   kubectl get-all --namespace=default
+  ```
+
+- ... at cluster level
+  ```bash
+  kubectl get-all --only-scope=cluster
   ```
 
 - ... using list of cached server resources

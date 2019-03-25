@@ -56,11 +56,11 @@ More on https://github.com/corneliusweig/ketall/blob/v1.0.2/doc/USAGE.md#usage
   Get all resources created in the last minute
   $ ketall --since 1m
 
-  Get all cluster level resources
-  $ ketall --only-scope=cluster
-
   Get all resources in the default namespace
   $ ketall --namespace=default
+
+  Get all cluster level resources
+  $ ketall --only-scope=cluster
 
   Some options can also be configured in the config file 'ketall'
 `

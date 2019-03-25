@@ -20,11 +20,6 @@ Get all resources...
   ketall --exclude=
   ```
 
-- ... at cluster level
-  ```bash
-  ketall --only-scope=cluster
-  ```
-
 - ... created in the last minute
   ```bash
   ketall --since 1m
@@ -34,6 +29,11 @@ Get all resources...
 - ... in the default namespace
   ```bash
   ketall --namespace=default
+  ```
+
+- ... at cluster level
+  ```bash
+  ketall --only-scope=cluster
   ```
 
 - ... using list of cached server resources
