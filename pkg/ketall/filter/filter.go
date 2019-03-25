@@ -35,6 +35,10 @@ type Predicate = func(runtime.Object) bool
 func ApplyFilter(o runtime.Object) runtime.Object {
 	since := viper.GetString(constants.FlagSince)
 
+	if since == "" {
+		logrus.Debugf("No filter found")
+		return o
+	}
 	logrus.Debugf("Found %s argument %s", constants.FlagSince, since)
 
 	predicate, err := AgePredicate(since)
