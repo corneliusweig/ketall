@@ -53,6 +53,9 @@ More on https://github.com/corneliusweig/ketall/blob/v1.0.2/doc/USAGE.md#usage
   Get all resources, including events
   $ ketall --exclude=
 
+  Get all resources created in the last minute
+  $ ketall --since 1m
+
   Get all cluster level resources
   $ ketall --only-scope=cluster
 

@@ -25,6 +25,12 @@ Get all resources...
   ketall --only-scope=cluster
   ```
 
+- ... created in the last minute
+  ```bash
+  ketall --since 1m
+  ```
+  This flag understands typical human-readable durations such as `1m` or `1y1d1h1m1s`.
+
 - ... in some namespace
   ```bash
   ketall --only-scope=namespace --namespace=my-namespace

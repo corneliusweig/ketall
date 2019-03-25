@@ -31,6 +31,12 @@ Get all resources...
   kubectl get-all --exclude=
   ```
 
+- ... created in the last minute
+  ```bash
+  kubectl get-all --since 1m
+  ```
+  This flag understands typical human-readable durations such as `1m` or `1y1d1h1m1s`.
+
 - ... at cluster level
   ```bash
   kubectl get-all --only-scope=cluster
@@ -73,6 +79,7 @@ The following settings can be configured:
 only-scope: cluster
 namespace: default
 use-cache: true
+since: 1m
 # only plural form or abbreviations
 exclude:
 - componentstatuses
