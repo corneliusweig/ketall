@@ -59,8 +59,8 @@ More on https://github.com/corneliusweig/ketall/blob/v1.0.2/doc/USAGE.md#usage
   Get all cluster level resources
   $ ketall --only-scope=cluster
 
-  Get all resources in a particular namespace
-  $ ketall --only-scope=namespace --namespace=<some>
+  Get all resources in the default namespace
+  $ ketall --namespace=default
 
   Some options can also be configured in the config file 'ketall'
 `

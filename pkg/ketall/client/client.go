@@ -196,7 +196,7 @@ func fetchResourcesIncremental(flags resource.RESTClientGetter, rs ...groupResou
 func getResourceScope(scope string) (skipCluster, skipNamespace bool, err error) {
 	switch scope {
 	case "":
-		skipCluster = false
+		skipCluster = viper.GetString(constants.FlagNamespace) != ""
 		skipNamespace = false
 	case "namespace":
 		skipCluster = true
