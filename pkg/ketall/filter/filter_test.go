@@ -71,7 +71,7 @@ func TestFilterByPredicate(t *testing.T) {
 			for i, time := range test.creationTimes {
 				o := &FakeV1Obj{}
 				o.Name = fmt.Sprintf("o%d", i+1)
-				o.CreationTimestamp = metav1.Time{time}
+				o.CreationTimestamp = metav1.Time{Time: time}
 				givenObjs = append(givenObjs, o)
 			}
 

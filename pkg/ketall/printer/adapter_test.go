@@ -42,7 +42,7 @@ func (o *mockObject) String() string {
 
 func (o *mockObject) DeepCopyObject() runtime.Object {
 	clone := mockObject{
-		gvk:     schema.GroupVersionKind{o.gvk.Group, o.gvk.Version, o.gvk.Kind},
+		gvk:     schema.GroupVersionKind{Group: o.gvk.Group, Version: o.gvk.Version, Kind: o.gvk.Kind},
 		content: o.content,
 	}
 	return &clone
@@ -98,12 +98,12 @@ func TestFlattenListAdapter_PrintObj(t *testing.T) {
 	buffer := &bytes.Buffer{}
 	printer := NewFlattenListAdapterPrinter(&delegate)
 
-	gvk := schema.GroupVersionKind{"", "v1", "Test"}
+	gvk := schema.GroupVersionKind{Group: "", Version: "v1", Kind: "Test"}
 	list := &mockList{
 		Items: []mockObject{
-			{gvk, "object 1"},
-			{gvk, "object 2"},
-			{gvk, "object 3"},
+			{gvk: gvk, content: "object 1"},
+			{gvk: gvk, content: "object 2"},
+			{gvk: gvk, content: "object 3"},
 		},
 	}
 
