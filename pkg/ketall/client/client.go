@@ -52,7 +52,7 @@ func GetAllServerResources(flags *genericclioptions.ConfigFlags) (runtime.Object
 		return nil, errors.Wrap(err, "fetch available group resources")
 	}
 
-	resources := extractRelevantResources(grs, viper.GetStringSlice(constants.FlagExclude))
+	resources := extractRelevantResources(grs, getExclusions())
 
 	start := time.Now()
 	response, err := fetchResourcesBulk(flags, resources...)
@@ -62,6 +62,17 @@ func GetAllServerResources(flags *genericclioptions.ConfigFlags) (runtime.Object
 	}
 
 	return fetchResourcesIncremental(flags, resources...)
+}
+
+func getExclusions() []string {
+	exclusions := viper.GetStringSlice(constants.FlagExclude)
+
+	// This is a workaround for a k8s bug where componentstatus is reported even though the label selector does not apply
+	if selector := viper.GetString(constants.FlagSelector); selector != "" {
+		exclusions = append(exclusions, "componentstatuses")
+	}
+
+	return exclusions
 }
 
 func fetchAvailableGroupResources(cache bool, scope string, flags *genericclioptions.ConfigFlags) ([]groupResource, error) {
