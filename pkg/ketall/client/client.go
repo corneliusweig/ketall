@@ -143,13 +143,19 @@ func fetchResourcesBulk(flags resource.RESTClientGetter, resourceTypes ...groupR
 
 	request := resource.NewBuilder(flags).
 		Unstructured().
-		SelectAllParam(true).
 		ResourceTypes(resourceNames...).
 		Latest()
+
 	if ns := viper.GetString(constants.FlagNamespace); ns != "" {
 		request.NamespaceParam(ns)
 	} else {
 		request.AllNamespaces(true)
+	}
+
+	if selector := viper.GetString(constants.FlagSelector); selector != "" {
+		request.LabelSelectorParam(selector)
+	} else {
+		request.SelectAllParam(true)
 	}
 
 	return request.Do().Object()
