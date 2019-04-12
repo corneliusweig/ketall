@@ -23,7 +23,7 @@ import (
 	"github.com/corneliusweig/ketall/pkg/ketall/printer"
 	"github.com/sirupsen/logrus"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
-	"k8s.io/cli-runtime/pkg/genericclioptions/printers"
+	"k8s.io/cli-runtime/pkg/printers"
 )
 
 type KetallOptions struct {
@@ -39,7 +39,7 @@ type KetallOptions struct {
 
 func NewCmdOptions() *KetallOptions {
 	return &KetallOptions{
-		GenericCliFlags: genericclioptions.NewConfigFlags(),
+		GenericCliFlags: genericclioptions.NewConfigFlags(true),
 		PrintFlags:      KAPrintFlags{genericclioptions.NewPrintFlags("")},
 		Streams: &genericclioptions.IOStreams{
 			In:     os.Stdin,
@@ -54,7 +54,7 @@ func NewTestTestCmdOptions() (*KetallOptions, *bytes.Buffer, *bytes.Buffer, *byt
 	iostreams, in, out, errout := genericclioptions.NewTestIOStreams()
 	logrus.SetOutput(errout)
 	return &KetallOptions{
-		GenericCliFlags: genericclioptions.NewConfigFlags(),
+		GenericCliFlags: genericclioptions.NewConfigFlags(true),
 		PrintFlags:      KAPrintFlags{genericclioptions.NewPrintFlags("")},
 		Streams:         &iostreams,
 	}, in, out, errout

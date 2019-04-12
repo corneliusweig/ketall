@@ -24,7 +24,7 @@ import (
 	"github.com/corneliusweig/ketall/pkg/ketall/options"
 	"github.com/corneliusweig/ketall/pkg/ketall/printer"
 	"github.com/sirupsen/logrus"
-	"k8s.io/cli-runtime/pkg/genericclioptions/printers"
+	"k8s.io/cli-runtime/pkg/printers"
 )
 
 func KetAll(ketallOptions *options.KetallOptions) {
