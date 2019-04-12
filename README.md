@@ -42,9 +42,9 @@ Get all resources...
   ```
   Note that this may fail to show __really__ everything, if the http cache is stale.
 
-- ... and combine with common `kubectl` parameters
+- ... and combine with common `kubectl` options
   ```bash
-  KUBECONFIG=otherconfig ketall -o name --context some --namespace kube-system
+  KUBECONFIG=otherconfig ketall -o name --context some --namespace kube-system --selector run=skaffold
   ```
 
 Also see [Usage](doc/USAGE.md).

@@ -33,6 +33,7 @@ type KetallOptions struct {
 	UseCache        bool
 	Scope           string
 	Since           string
+	Selector        string
 	Exclusions      []string
 	Streams         *genericclioptions.IOStreams
 }

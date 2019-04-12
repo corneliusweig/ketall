@@ -26,4 +26,5 @@ const (
 	FlagScope     = "only-scope"
 	FlagSince     = "since"
 	FlagUseCache  = "use-cache"
+	FlagSelector  = "selector"
 )
