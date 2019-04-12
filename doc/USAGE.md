@@ -12,9 +12,10 @@ kubectl get-all
 
 - `--only-scope=cluster` will only show cluster level resources, such as `ClusterRole`, `Namespace`, or `PersistentVolume`.
 - `--only-scope=namespace` will only show namespaced resources, such as `ServiceAccount`, `Role`, `ConfigMap`, or `Endpoint`.
-- `--use-cache` will consider the http cache to determine the server resources to look at. Disabled by default.
+- `--selector` (`-l`) will filter by label query, supports `=`, `==`, and `!=`.(e.g. `-l key1=value1,key2=value2`)
 - `--exclude` will filter out the given resources (either plural names `componentstatuses` or short form `cs`). Defaults to `events` because those are rarely useful.
 - ...and many standard `kubectl` options. Have a look at `kubectl get-all --help` for a full list of supported flags.
+- `--use-cache` will consider the http cache to determine the server resources to look at. Disabled by default.
 - `--verbosity` set the log level (one of debug, info, warn, error, fatal, panic).
 
 **Hint**: If you do not have access to all resources, bulk fetching needs to be disabled. You can speed things up by explicitly excluding all resources which you may not access.
@@ -53,9 +54,9 @@ Get all resources...
   ```
   Note that this may fail to show __really__ everything, if the http cache is stale.
 
-- ... and combine with common `kubectl` parameters
+- ... and combine with common `kubectl` options
   ```bash
-  KUBECONFIG=otherconfig kubectl get-all -o name --context some --namespace kube-system
+  KUBECONFIG=otherconfig kubectl get-all -o name --context some --namespace kube-system --selector run=skaffold
   ```
 
 ## Getting help
@@ -80,6 +81,7 @@ only-scope: cluster
 namespace: default
 use-cache: true
 since: 1m
+selector: run=skaffold,tail!=true
 # only plural form or abbreviations
 exclude:
 - componentstatuses
