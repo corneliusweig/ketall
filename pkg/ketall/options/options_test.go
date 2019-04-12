@@ -22,7 +22,7 @@ import (
 	"github.com/corneliusweig/ketall/pkg/ketall/printer"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
-	"k8s.io/cli-runtime/pkg/genericclioptions/printers"
+	"k8s.io/cli-runtime/pkg/printers"
 )
 
 func TestKAPrintFlags_ToPrinter(t *testing.T) {
