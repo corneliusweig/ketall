@@ -3,7 +3,7 @@
 # Usage
 ![ketall demo](demo.gif "ketall demo")
 
-If you installed via [krew](https://github.com/GoogleContainerTools/krew) do
+If you installed via [krew](https://github.com/kubernetes-sigs/krew) do
 ```bash
 kubectl get-all
 ```
@@ -91,13 +91,13 @@ exclude:
 ## Installation
 
 ### Via krew
-If you do not have `krew` installed, visit [https://github.com/GoogleContainerTools/krew](https://github.com/GoogleContainerTools/krew).
+If you do not have `krew` installed, visit [https://github.com/kubernetes-sigs/krew](https://github.com/kubernetes-sigs/krew).
 ```bash
 kubectl krew install get-all
 ```
 
 ### As `kubectl` plugin
-Most users will have installed `ketall` via [krew](https://github.com/GoogleContainerTools/krew),
+Most users will have installed `ketall` via [krew](https://github.com/kubernetes-sigs/krew),
 so the plugin is already correctly installed.
 Otherwise, rename `ketall` to `kubectl-get_all` and put it in some directory from your `$PATH` variable.
 Then you can invoke the plugin via `kubectl get-all`
