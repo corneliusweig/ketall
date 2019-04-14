@@ -34,6 +34,7 @@ type KetallOptions struct {
 	Scope           string
 	Since           string
 	Selector        string
+	FieldSelector   string
 	Exclusions      []string
 	Streams         *genericclioptions.IOStreams
 }

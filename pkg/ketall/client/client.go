@@ -67,8 +67,10 @@ func GetAllServerResources(flags *genericclioptions.ConfigFlags) (runtime.Object
 func getExclusions() []string {
 	exclusions := viper.GetStringSlice(constants.FlagExclude)
 
-	// This is a workaround for a k8s bug where componentstatus is reported even though the label selector does not apply
-	if selector := viper.GetString(constants.FlagSelector); selector != "" {
+	// This is a workaround for a k8s bug where componentstatus is reported even though the selector does not apply
+	selector := viper.GetString(constants.FlagSelector)
+	fieldSelector := viper.GetString(constants.FlagFieldSelector)
+	if selector != "" || fieldSelector != "" {
 		exclusions = append(exclusions, "componentstatuses")
 	}
 
@@ -163,10 +165,13 @@ func fetchResourcesBulk(flags resource.RESTClientGetter, resourceTypes ...groupR
 		request.AllNamespaces(true)
 	}
 
-	if selector := viper.GetString(constants.FlagSelector); selector != "" {
-		request.LabelSelectorParam(selector)
-	} else {
+	selector := viper.GetString(constants.FlagSelector)
+	fieldSelector := viper.GetString(constants.FlagFieldSelector)
+	if selector == "" && fieldSelector == "" {
 		request.SelectAllParam(true)
+	} else {
+		request.LabelSelectorParam(selector)
+		request.FieldSelectorParam(fieldSelector)
 	}
 
 	return request.Do().Object()
