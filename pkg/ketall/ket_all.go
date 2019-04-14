@@ -17,6 +17,7 @@ limitations under the License.
 package ketall
 
 import (
+	"io"
 	"text/tabwriter"
 
 	"github.com/corneliusweig/ketall/pkg/ketall/client"
@@ -35,12 +36,17 @@ func KetAll(ketallOptions *options.KetallOptions) {
 
 	filtered := filter.ApplyFilter(all)
 
+	out := ketallOptions.Streams.Out
+	if filtered == nil {
+		io.WriteString(out, "No resources found.\n")
+		return
+	}
+
 	resourcePrinter, err := ketallOptions.PrintFlags.ToPrinter()
 	if err != nil {
 		logrus.Fatal(err)
 	}
 
-	out := ketallOptions.Streams.Out
 	p := resourcePrinter
 	switch pr := resourcePrinter.(type) {
 	// yaml and json printers should operate on the full tree structure with nested lists

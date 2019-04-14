@@ -17,7 +17,6 @@ limitations under the License.
 package filter
 
 import (
-	"fmt"
 	"testing"
 	"time"
 
@@ -42,47 +41,94 @@ func TestFilterByPredicate(t *testing.T) {
 
 	tests := []struct {
 		name          string
-		humanDuration string
-		creationTimes []time.Time
+		objects       runtime.Object
+		givenMaxAge   string
 		expectedNames []string
 	}{
 		{
-			name:          "two objects, one too old",
-			creationTimes: []time.Time{now, now.Add(-120 * time.Second)},
-			humanDuration: "119s",
+			name: "two objects, one too old",
+			objects: util.ToV1List([]runtime.Object{
+				newFakeObj("o1", now),
+				newFakeObj("o2", now.Add(-120*time.Second)),
+			}),
+			givenMaxAge:   "119s",
 			expectedNames: []string{"o1"},
 		},
 		{
-			name:          "two objects, both too old",
-			creationTimes: []time.Time{now.Add(-60 * time.Second), now.Add(-120 * time.Second)},
-			humanDuration: "10s",
+			name: "two objects, both too old",
+			objects: util.ToV1List([]runtime.Object{
+				newFakeObj("o1", now.Add(-60*time.Second)),
+				newFakeObj("o2", now.Add(-120*time.Second)),
+			}),
+			givenMaxAge: "10s",
 		},
 		{
-			name:          "two objects, both match",
-			creationTimes: []time.Time{now.Add(-60 * time.Second), now.Add(-120 * time.Second)},
-			humanDuration: "121s",
+			name: "two objects, both match",
+			objects: util.ToV1List([]runtime.Object{
+				newFakeObj("o1", now.Add(-60*time.Second)),
+				newFakeObj("o2", now.Add(-120*time.Second)),
+			}),
+			givenMaxAge:   "121s",
 			expectedNames: []string{"o1", "o2"},
+		},
+		{
+			name: "two objects, without duration",
+			objects: util.ToV1List([]runtime.Object{
+				newFakeObj("o1", now.Add(-60*time.Second)),
+				newFakeObj("o2", now.Add(-120*time.Second)),
+			}),
+			givenMaxAge:   "",
+			expectedNames: []string{"o1", "o2"},
+		},
+		{
+			name: "two objects and empty lists, without duration",
+			objects: util.ToV1List([]runtime.Object{
+				util.ToV1List([]runtime.Object{}),
+				newFakeObj("o1", now.Add(-60*time.Second)),
+				util.ToV1List([]runtime.Object{}),
+				newFakeObj("o2", now.Add(-120*time.Second)),
+				util.ToV1List([]runtime.Object{}),
+			}),
+			givenMaxAge:   "",
+			expectedNames: []string{"o1", "o2"},
+		},
+		{
+			name: "two objects and empty lists, with duration",
+			objects: util.ToV1List([]runtime.Object{
+				util.ToV1List([]runtime.Object{}),
+				newFakeObj("o1", now.Add(-60*time.Second)),
+				util.ToV1List([]runtime.Object{}),
+				newFakeObj("o2", now.Add(-120*time.Second)),
+				util.ToV1List([]runtime.Object{}),
+			}),
+			givenMaxAge:   "90s",
+			expectedNames: []string{"o1"},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			var givenObjs []runtime.Object
-			for i, time := range test.creationTimes {
-				o := &FakeV1Obj{}
-				o.Name = fmt.Sprintf("o%d", i+1)
-				o.CreationTimestamp = metav1.Time{Time: time}
-				givenObjs = append(givenObjs, o)
+			originalSince := getSince
+			getSince = func() string {
+				return test.givenMaxAge
 			}
+			defer func() {
+				getSince = originalSince
+			}()
 
-			predicate, _ := AgePredicate(test.humanDuration)
+			filtered := ApplyFilter(test.objects)
 
-			filtered, err := ByPredicate(util.ToV1List(givenObjs), predicate)
 			actualObjs, _ := meta.ExtractList(filtered)
-			assert.NoError(t, err)
 			assert.Equal(t, test.expectedNames, toNames(actualObjs))
 		})
 	}
+}
+
+func newFakeObj(name string, age time.Time) *FakeV1Obj {
+	o := &FakeV1Obj{}
+	o.Name = name
+	o.CreationTimestamp = metav1.Time{Time: age}
+	return o
 }
 
 func toNames(in []runtime.Object) (names []string) {

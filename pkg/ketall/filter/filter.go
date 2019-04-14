@@ -32,22 +32,24 @@ import (
 
 type Predicate = func(runtime.Object) bool
 
+var (
+	// exposed for testing
+	getSince = getSinceViper
+)
+
 func ApplyFilter(o runtime.Object) runtime.Object {
-	since := viper.GetString(constants.FlagSince)
+	predicates := make([]Predicate, 0, 1)
 
-	if since == "" {
-		logrus.Debugf("No filter found")
-		return o
-	}
-	logrus.Debugf("Found %s argument %s", constants.FlagSince, since)
-
-	predicate, err := AgePredicate(since)
-	if err != nil {
-		logrus.Warnf("%s", errors.Wrapf(err, "skipping filter"))
-		return o
+	if since := getSince(); since != "" {
+		logrus.Debugf("Found %s argument %s", constants.FlagSince, since)
+		predicate, err := AgePredicate(since)
+		if err != nil {
+			logrus.Warnf("%s", errors.Wrapf(err, "skipping age filter"))
+		}
+		predicates = append(predicates, predicate)
 	}
 
-	filtered, err := ByPredicate(o, predicate)
+	filtered, err := ByPredicates(o, predicates...)
 	if err != nil {
 		logrus.Warnf("%s", errors.Wrapf(err, "filtering failed"))
 		return o
@@ -56,12 +58,14 @@ func ApplyFilter(o runtime.Object) runtime.Object {
 	return filtered
 }
 
-func ByPredicate(o runtime.Object, p Predicate) (runtime.Object, error) {
+func ByPredicates(o runtime.Object, ps ...Predicate) (runtime.Object, error) {
 	if !meta.IsListType(o) {
-		if p(o) {
-			return o, nil
+		for _, p := range ps {
+			if !p(o) {
+				return nil, nil
+			}
 		}
-		return nil, nil
+		return o, nil
 	}
 
 	allItems, err := meta.ExtractList(o)
@@ -71,13 +75,17 @@ func ByPredicate(o runtime.Object, p Predicate) (runtime.Object, error) {
 
 	var items []runtime.Object
 	for _, item := range allItems {
-		item, err := ByPredicate(item, p)
+		item, err := ByPredicates(item, ps...)
 		if err != nil {
 			return nil, err
 		}
 		if item != nil {
 			items = append(items, item)
 		}
+	}
+
+	if items == nil {
+		return nil, nil
 	}
 
 	return util.ToV1List(items), nil
@@ -132,4 +140,8 @@ func ParseHumanDuration(since string) (time.Duration, error) {
 		}
 	}
 	return time.Duration(int64(time.Second) * seconds), nil
+}
+
+func getSinceViper() string {
+	return viper.GetString(constants.FlagSince)
 }
