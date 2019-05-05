@@ -154,25 +154,16 @@ func fetchResourcesBulk(flags resource.RESTClientGetter, resourceTypes ...groupR
 	resourceNames := ToResourceTypes(resourceTypes)
 	logrus.Debugf("Resources to fetch: %s", resourceNames)
 
+	ns := viper.GetString(constants.FlagNamespace)
+	selector := viper.GetString(constants.FlagSelector)
+	fieldSelector := viper.GetString(constants.FlagFieldSelector)
+
 	request := resource.NewBuilder(flags).
 		Unstructured().
 		ResourceTypes(resourceNames...).
+		NamespaceParam(ns).DefaultNamespace().AllNamespaces(ns == "").
+		LabelSelectorParam(selector).FieldSelectorParam(fieldSelector).SelectAllParam(selector == "" && fieldSelector == "").
 		Latest()
-
-	if ns := viper.GetString(constants.FlagNamespace); ns != "" {
-		request.NamespaceParam(ns)
-	} else {
-		request.AllNamespaces(true)
-	}
-
-	selector := viper.GetString(constants.FlagSelector)
-	fieldSelector := viper.GetString(constants.FlagFieldSelector)
-	if selector == "" && fieldSelector == "" {
-		request.SelectAllParam(true)
-	} else {
-		request.LabelSelectorParam(selector)
-		request.FieldSelectorParam(fieldSelector)
-	}
 
 	return request.Do().Object()
 }
