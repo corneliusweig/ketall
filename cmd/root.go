@@ -61,7 +61,7 @@ More on https://github.com/corneliusweig/ketall/blob/v1.2.0/doc/USAGE.md#usage
   Get all cluster level resources
   $ ketall --only-scope=cluster
 
-  Some options can also be configured in the config file 'ketall'
+  Some options can also be configured in the config file './ketall.yaml' or '~/.kube/ketall.yaml'
 `
 )
 
