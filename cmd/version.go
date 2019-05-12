@@ -17,12 +17,10 @@ limitations under the License.
 package cmd
 
 import (
-	"os"
 	"text/template"
 
 	"github.com/corneliusweig/ketall/pkg/ketall/version"
 	"github.com/sirupsen/logrus"
-
 	"github.com/spf13/cobra"
 )
 
@@ -51,7 +49,7 @@ func init() {
 	versionCmd.Flags().BoolP("full", "f", false, "print extended version information")
 }
 
-func runVersion(cmd *cobra.Command, args []string) {
+func runVersion(cmd *cobra.Command, _ []string) {
 	var tpl string
 
 	if cmd.Flag("full").Changed {
@@ -62,7 +60,7 @@ func runVersion(cmd *cobra.Command, args []string) {
 
 	var t = template.Must(template.New("info").Parse(tpl))
 
-	if err := t.Execute(os.Stdout, version.GetBuildInfo()); err != nil {
+	if err := t.Execute(ketallOptions.Streams.Out, version.GetBuildInfo()); err != nil {
 		logrus.Warn("Could not print version info")
 	}
 }

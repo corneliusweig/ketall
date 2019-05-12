@@ -20,15 +20,14 @@ import (
 	"io"
 	"path/filepath"
 
+	"github.com/corneliusweig/ketall/pkg/ketall"
 	"github.com/corneliusweig/ketall/pkg/ketall/constants"
 	"github.com/corneliusweig/ketall/pkg/ketall/options"
-	"github.com/sirupsen/logrus"
-	"k8s.io/client-go/util/homedir"
-
-	"github.com/corneliusweig/ketall/pkg/ketall"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"k8s.io/client-go/util/homedir"
 )
 
 var (
@@ -77,10 +76,9 @@ var rootCmd = &cobra.Command{
 	},
 }
 
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		logrus.Fatal("Ececution failed:", err)
-	}
+func Execute() error {
+	rootCmd.SetOutput(ketallOptions.Streams.Out)
+	return rootCmd.Execute()
 }
 
 func init() {
