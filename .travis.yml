@@ -2,16 +2,15 @@ language: go
 
 os:
   - linux
-#  - osx
+  - osx
 
 go:
-  - "1.11.x"
+  - "1.12.x"
 
 env:
   - GO111MODULE=on
 
 script:
-  - make test
   - make coverage
   - make lint
   - make dev
