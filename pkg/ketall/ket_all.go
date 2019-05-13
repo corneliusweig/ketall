@@ -17,16 +17,16 @@ limitations under the License.
 package ketall
 
 import (
-	"io"
-	"text/tabwriter"
-
+	"context"
 	"github.com/corneliusweig/ketall/pkg/ketall/client"
 	"github.com/corneliusweig/ketall/pkg/ketall/filter"
 	"github.com/corneliusweig/ketall/pkg/ketall/options"
 	"github.com/corneliusweig/ketall/pkg/ketall/printer"
 	"github.com/sirupsen/logrus"
+	"io"
 	"k8s.io/cli-runtime/pkg/printers"
 )
+
 
 func KetAll(ketallOptions *options.KetallOptions) {
 	all, err := client.GetAllServerResources(ketallOptions.GenericCliFlags)
@@ -57,7 +57,7 @@ func KetAll(ketallOptions *options.KetallOptions) {
 	// other printers should flatten the resource list and operate on leaf items
 	case *printer.TablePrinter:
 		logrus.Debug("Using tabwriter")
-		tw := tabwriter.NewWriter(out, 4, 4, 2, ' ', 0)
+		tw := printer.GetNewTabWriter(out)
 		defer tw.Flush()
 		out = tw
 		if err := pr.PrintHeader(out); err != nil {
@@ -69,6 +69,12 @@ func KetAll(ketallOptions *options.KetallOptions) {
 	}
 
 	if err = p.PrintObj(filtered, out); err != nil {
+		logrus.Fatal(err)
+	}
+}
+
+func WatchAll(ctx context.Context, ketallOptions *options.KetallOptions) {
+	if err := client.WatchAllServerResources(ctx, ketallOptions.GenericCliFlags, ketallOptions.Streams.Out); err != nil {
 		logrus.Fatal(err)
 	}
 }
