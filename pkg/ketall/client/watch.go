@@ -20,7 +20,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/corneliusweig/ketall/pkg/ketall/color"
-	"github.com/google/go-cmp/cmp"
+	"github.com/corneliusweig/ketall/pkg/ketall/yamldiff"
 	"io"
 	"k8s.io/apimachinery/pkg/runtime"
 	"os"
@@ -40,40 +40,39 @@ import (
 	watchtools "k8s.io/client-go/tools/watch"
 )
 
-type parPrinter struct {
+type lockingPrinter struct {
 	sync.Mutex
 
 	w *tabwriter.Writer
 	p printers.ResourcePrinter
 }
 
-func (pp *parPrinter) print(e watch.Event) error {
+func (pp *lockingPrinter) print(e watch.Event) (err error, unlock func()) {
 	pp.Lock()
-	defer pp.Unlock()
-	if err := pp.colorizeEventType(e.Type); err != nil {
-		return err
+	unlock = pp.Unlock
+	if err = pp.colorizeEventType(e.Type); err != nil {
+		return
 	}
-	if err := pp.p.PrintObj(e.Object, pp.w); err != nil {
-
-		return err
+	if err = pp.p.PrintObj(e.Object, pp.w); err != nil {
+		return
 	}
-	if err := pp.w.Flush(); err != nil {
-		return err
+	if err = pp.w.Flush(); err != nil {
+		return
 	}
-	return nil
+	return
 }
 
-func (pp *parPrinter) colorizeEventType(e watch.EventType) error {
-	var c color.Color
+func (pp *lockingPrinter) colorizeEventType(e watch.EventType) error {
+	var c color.TableColor
 	switch e {
 	case watch.Added:
-		c = color.Green
+		c = color.LightGreen
 	case watch.Modified:
-		c = color.Blue
+		c = color.LightBlue
 	case watch.Deleted:
-		c = color.Red
+		c = color.LightRed
 	case watch.Error:
-		c = color.Purple
+		c = color.LightPurple
 	}
 	if _, err := c.Fprint(pp.w, string(e)); err != nil {
 		return err
@@ -83,8 +82,9 @@ func (pp *parPrinter) colorizeEventType(e watch.EventType) error {
 	}
 	return nil
 }
-/*func (pp *parPrinter) colorizeEventType(e watch.EventType) error {
-	var c color.Color
+
+/*func (pp *lockingPrinter) colorizeEventType(e watch.EventType) error {
+	var c color.TableColor
 	var text string
 	switch e {
 	case watch.Added:
@@ -109,7 +109,7 @@ func (pp *parPrinter) colorizeEventType(e watch.EventType) error {
 	return nil
 }*/
 
-func newParPrinter(out io.Writer) *parPrinter {
+func newParPrinter(out io.Writer) *lockingPrinter {
 	tablePrinter := &printer.TablePrinter{}
 	tabWriter := printer.GetNewTabWriter(out)
 	_, _ = fmt.Fprint(tabWriter, "EVENT\t")
@@ -117,7 +117,7 @@ func newParPrinter(out io.Writer) *parPrinter {
 
 	tabWriter.SetRememberedWidths([]int{8, 50, 20, 4})
 
-	return &parPrinter{
+	return &lockingPrinter{
 		w: tabWriter,
 		p: tablePrinter,
 	}
@@ -162,7 +162,7 @@ type resourceHandle struct {
 	name, namespace string
 }
 
-func watchSingleResource(ctx context.Context, flags resource.RESTClientGetter, p *parPrinter, resourceName string) {
+func watchSingleResource(ctx context.Context, flags resource.RESTClientGetter, p *lockingPrinter, resourceName string) {
 	ns := viper.GetString(constants.FlagNamespace)
 	selector := viper.GetString(constants.FlagSelector)
 	fieldSelector := viper.GetString(constants.FlagFieldSelector)
@@ -193,24 +193,26 @@ func watchSingleResource(ctx context.Context, flags resource.RESTClientGetter, p
 		return
 	}
 
-	seen := make(map[resourceHandle]runtime.Object)
+	seen := make(map[resourceHandle]map[string]interface{})
 
 	_, _ = watchtools.UntilWithoutRetry(ctx, watcher, func(e watch.Event) (bool, error) {
 		//if e.Type == watch.Modified {
 		//	return false, nil
 		//}
 
-		err = p.print(e)
+		err, unlock := p.print(e)
+		defer unlock()
 
 		accessor, _ := meta.Accessor(e.Object)
 		h := resourceHandle{
 			namespace: accessor.GetNamespace(),
-			name: accessor.GetName(),
+			name:      accessor.GetName(),
 		}
+		next := e.Object.(runtime.Unstructured).UnstructuredContent()
 		if last, ok := seen[h]; ok {
-			fmt.Fprintf(os.Stdout, "%s\n", cmp.Diff(last, e.Object))
+			yamldiff.FDiff(os.Stdout, last, next)
 		}
-		seen[h] = e.Object
+		seen[h] = next
 
 		return false, err
 	})

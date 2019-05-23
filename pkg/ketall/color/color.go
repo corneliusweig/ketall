@@ -22,33 +22,33 @@ import (
 	"strings"
 )
 
-type Color int
+type TableColor int
 
 var (
-	None        = Color(0)
-	Red         = Color(31)
-	Green       = Color(32)
-	Yellow      = Color(33)
-	Blue        = Color(34)
-	Purple      = Color(35)
-	Cyan        = Color(36)
-	White       = Color(37)
-	LightRed    = Color(91)
-	LightGreen  = Color(92)
-	LightYellow = Color(93)
-	LightBlue   = Color(94)
-	LightPurple = Color(95)
-	LightCyan   = Color(96)
+	None        = TableColor(0)
+	Red         = TableColor(31)
+	Green       = TableColor(32)
+	Yellow      = TableColor(33)
+	Blue        = TableColor(34)
+	Purple      = TableColor(35)
+	Cyan        = TableColor(36)
+	White       = TableColor(37)
+	LightRed    = TableColor(91)
+	LightGreen  = TableColor(92)
+	LightYellow = TableColor(93)
+	LightBlue   = TableColor(94)
+	LightPurple = TableColor(95)
+	LightCyan   = TableColor(96)
 )
 
-func (c Color) Fprint(out io.Writer, a ...interface{}) (n int, err error) {
-	return fmt.Fprintf(out, "\xff\033[%dm\xff%s\xff\033[0m\xff", c, fmt.Sprint(a...))
+func (c TableColor) Fprint(out io.Writer, a ...interface{}) (n int, err error) {
+	return fmt.Fprintf(out, "\xff\033[1;%dm\xff%s\xff\033[0m\xff", c, fmt.Sprint(a...))
 }
 
-func (c Color) Fprintln(out io.Writer, a ...interface{}) (n int, err error) {
-	return fmt.Fprintf(out, "\xff\033[%dm\xff%s\xff\033[0m\xff\n", c, strings.TrimSuffix(fmt.Sprintln(a...), "\n"))
+func (c TableColor) Fprintln(out io.Writer, a ...interface{}) (n int, err error) {
+	return fmt.Fprintf(out, "\xff\033[1;%dm\xff%s\xff\033[0m\xff\n", c, strings.TrimSuffix(fmt.Sprintln(a...), "\n"))
 }
 
-func (c Color) Fprintf(out io.Writer, format string, a ...interface{}) (n int, err error) {
-	return fmt.Fprintf(out, "\xff\033[%dm\xff%s\xff\033[0m\xff", c, fmt.Sprintf(format, a...))
+func (c TableColor) Fprintf(out io.Writer, format string, a ...interface{}) (n int, err error) {
+	return fmt.Fprintf(out, "\xff\033[1;%dm\xff%s\xff\033[0m\xff", c, fmt.Sprintf(format, a...))
 }
