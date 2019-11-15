@@ -50,7 +50,7 @@
 
 This is a checklist for new releases:
 
-0. Create release notes in `doc/releases`
+0. Create release notes in `doc/releases` with `hack/release_notes.sh`
 0. Update usage instructions, if applicable
 0. Create a new tag via `hack/make_tag.sh`
 0. Push the tag to GitHub `git push --tags`
