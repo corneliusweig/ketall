@@ -24,6 +24,7 @@ after_success:
 - bash <(curl -s https://codecov.io/bash)
 
 before_deploy:
+- hack/install-gox.sh
 - make deploy
 
 deploy:
