@@ -24,13 +24,11 @@ GOOS      ?= $(shell go env GOOS)
 GOPATH    ?= $(shell go env GOPATH)
 
 BUILDDIR  := out
-PLATFORMS ?= linux windows darwin
+PLATFORMS ?= darwin/amd64 windows/amd64 linux/amd64
 DISTFILE  := $(BUILDDIR)/$(VERSION).tar.gz
-TARGETS   := $(patsubst %,$(BUILDDIR)/$(PROJECT)-%-$(GOARCH),$(PLATFORMS))
-ASSETS    := $(BUILDDIR)/ketall-linux-$(GOARCH).gz $(BUILDDIR)/ketall-darwin-$(GOARCH).gz $(BUILDDIR)/ketall-windows-$(GOARCH).zip
-BUNDLE    := $(BUILDDIR)/bundle.tar.gz
-CHECKSUMS := $(patsubst %,%.sha256,$(ASSETS))
-CHECKSUMS += $(BUNDLE).sha256
+ASSETS     := $(BUILDDIR)/ketall-$(GOARCH)-darwin.tar.gz $(BUILDDIR)/ketall-$(GOARCH)-linux.tar.gz $(BUILDDIR)/ketall-$(GOARCH)-windows.zip
+ASSETSKREW := $(BUILDDIR)/get-all-$(GOARCH)-darwin.tar.gz $(BUILDDIR)/get-all-$(GOARCH)-linux.tar.gz $(BUILDDIR)/get-all-$(GOARCH)-windows.zip
+CHECKSUMS  := $(patsubst %,%.sha256,$(ASSETS) $(ASSETSKREW))
 
 VERSION_PACKAGE := $(REPOPATH)/pkg/ketall/version
 
@@ -67,47 +65,49 @@ help:
 	@echo '  - coverage: run unit tests with coverage'
 	@echo '  - deploy:   build artifacts for a new deployment'
 	@echo '  - dev:      build the binary for the current platform'
-	@echo '  - dist:     create a tar archive of the source code
+	@echo '  - dist:     create a tar archive of the source code'
 	@echo '  - help:     print this help'
-	@echo '  - install:  install the `ketall` binary in your gopath'
-	@echo '  - lint:     run golangci-lint
+	@echo '  - lint:     run golangci-lint'
 	@echo '  - test:     run unit tests'
+	@echo '  - build-ketall:   build binaries for all supported platforms'
+	@echo '  - build-get-all:  build binaries for all supported platforms'
 
 .PHONY: coverage
 coverage: $(BUILDDIR)
 	go test -coverprofile=$(BUILDDIR)/coverage.txt -covermode=atomic ./...
 
 .PHONY: all
-all: $(TARGETS)
+all: lint test dev
 
 .PHONY: dev
-dev: GO_FLAGS := -race
 dev: CGO_ENABLED := 1
 dev: GO_LDFLAGS := $(subst -s -w,,$(GO_LDFLAGS))
-dev: $(BUILDDIR)/ketall-$(shell go env GOOS)-$(GOARCH)
-	@mv $< $(PROJECT)
+dev:
+	go build -race -ldflags $(GO_LDFLAGS) -o ketall main.go
 
-$(BUILDDIR)/$(PROJECT)-%-$(GOARCH): $(GO_FILES) $(BUILDDIR)
-	GOOS=$* go build $(GO_FLAGS) -ldflags $(GO_LDFLAGS) -o $@ main.go
+build-ketall: $(GO_FILES) $(BUILDDIR)
+	gox -osarch="$(PLATFORMS)" -ldflags $(GO_LDFLAGS) -output="out/ketall-{{.Arch}}-{{.OS}}"
 
-install: $(BUILDDIR)/$(PROJECT)-$(GOOS)-$(GOARCH)
-	@mv -i $< $(GOPATH)/bin/$(PROJECT)
+build-get-all: $(GO_FILES) $(BUILDDIR)
+	gox -osarch="$(PLATFORMS)" -tags getall -ldflags $(GO_LDFLAGS) -output="out/get-all-{{.Arch}}-{{.OS}}"
 
 .PHONY: lint
 lint:
 	hack/run_lint.sh
 
 .PRECIOUS: %.zip
-%.zip: %
-	zip $@ $<
+%.zip: %.exe
+	cp LICENSE $(BUILDDIR) && \
+	cd $(BUILDDIR) && \
+	zip $(patsubst $(BUILDDIR)/%, %, $@) LICENSE $(patsubst $(BUILDDIR)/%, %, $<)
 
 .PRECIOUS: %.gz
 %.gz: %
 	$(COMPRESS) "$<" > "$@"
 
-.INTERMEDIATE: $(BUNDLE:.gz=)
-$(BUNDLE:.gz=): $(TARGETS)
-	tar cf "$@" -C $(BUILDDIR) $(patsubst $(BUILDDIR)/%,%,$(TARGETS))
+%.tar: %
+	cp LICENSE $(BUILDDIR)
+	tar cf "$@" -C $(BUILDDIR) LICENSE $(patsubst $(BUILDDIR)/%,%,$^)
 
 $(BUILDDIR):
 	mkdir -p "$@"
@@ -121,11 +121,19 @@ $(DISTFILE:.gz=): $(BUILDDIR)
 
 .PHONY: deploy
 deploy: $(CHECKSUMS)
-	$(RM) $(TARGETS)
+	$(RM) $(BUILDDIR)/LICENSE
 
 .PHONY: dist
 dist: $(DISTFILE)
 
 .PHONY: clean
 clean:
-	$(RM) $(TARGETS) $(CHECKSUMS) $(DISTFILE) $(BUNDLE)
+	$(RM) -r $(BUILDDIR) ketall
+
+$(BUILDDIR)/ketall-amd64-linux: build-ketall
+$(BUILDDIR)/ketall-amd64-darwin: build-ketall
+$(BUILDDIR)/ketall-amd64-windows.exe: build-ketall
+
+$(BUILDDIR)/get-all-amd64-linux: build-get-all
+$(BUILDDIR)/get-all-amd64-darwin: build-get-all
+$(BUILDDIR)/get-all-amd64-windows.exe: build-get-all
