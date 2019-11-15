@@ -72,18 +72,18 @@ When using the binaries for installation, also have a look at [doc/USAGE](doc/US
 
 #### Linux
 ```bash
-curl -Lo ketall.gz https://github.com/corneliusweig/ketall/releases/download/v1.2.0/ketall-linux-amd64.gz && \
+curl -Lo ketall.gz https://github.com/corneliusweig/ketall/releases/download/v1.2.1/ketall-linux-amd64.gz && \
   gunzip ketall.gz && chmod +x ketall && mv ketall $GOPATH/bin/
 ```
 
 #### OSX
 ```bash
-curl -Lo ketall.gz https://github.com/corneliusweig/ketall/releases/download/v1.2.0/ketall-darwin-amd64.gz && \
+curl -Lo ketall.gz https://github.com/corneliusweig/ketall/releases/download/v1.2.1/ketall-darwin-amd64.gz && \
   gunzip ketall.gz && chmod +x ketall && mv ketall $GOPATH/bin/
 ```
 
 #### Windows
-[https://github.com/corneliusweig/ketall/releases/download/v1.2.0/ketall-windows-amd64.zip](https://github.com/corneliusweig/ketall/releases/download/v1.2.0/ketall-windows-amd64.zip)
+[https://github.com/corneliusweig/ketall/releases/download/v1.2.1/ketall-windows-amd64.zip](https://github.com/corneliusweig/ketall/releases/download/v1.2.1/ketall-windows-amd64.zip)
 
 ### From source
 
