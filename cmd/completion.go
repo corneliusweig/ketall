@@ -1,3 +1,5 @@
+// +build !getall
+
 /*
 Copyright 2019 Cornelius Weig
 
