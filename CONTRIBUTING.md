@@ -53,7 +53,6 @@ This is a checklist for new releases:
 0. Create release notes in `doc/releases` with `hack/release_notes.sh`
 0. Update usage instructions, if applicable
 0. Create a new tag via `hack/make_tag.sh`
-0. Push the tag to GitHub `git push --tags`
-0. Run `make deploy`
-0. Create new release on GitHub Releases and upload artifacts
+0. Push the tag to GitHub `git push origin <TAG>`
+0. Update the release text in the web UI when the build artifacts are published
 0. Update [krew-index](https://github.com/kubernetes-sigs/krew-index)
