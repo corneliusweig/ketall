@@ -20,14 +20,16 @@ import (
 	"io"
 	"path/filepath"
 
-	"github.com/corneliusweig/ketall/pkg/ketall"
-	"github.com/corneliusweig/ketall/pkg/ketall/constants"
-	"github.com/corneliusweig/ketall/pkg/ketall/options"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/util/homedir"
+
+	"github.com/corneliusweig/ketall/cmd/internal"
+	"github.com/corneliusweig/ketall/pkg/ketall"
+	"github.com/corneliusweig/ketall/pkg/ketall/constants"
+	"github.com/corneliusweig/ketall/pkg/ketall/options"
 )
 
 var (
@@ -47,30 +49,30 @@ More on https://github.com/corneliusweig/ketall/blob/v1.2.0/doc/USAGE.md#usage
 `
 	ketallExamples = `
   Get all resources, excluding events
-  $ ketall
+   $ ketall
 
   Get all resources, including events
-  $ ketall --exclude=
+   $ ketall --exclude=
 
   Get all resources created in the last minute
-  $ ketall --since 1m
+   $ ketall --since 1m
 
   Get all resources in the default namespace
-  $ ketall --namespace=default
+   $ ketall --namespace=default
 
   Get all cluster level resources
-  $ ketall --only-scope=cluster
+   $ ketall --only-scope=cluster
 
   Some options can also be configured in the config file './ketall.yaml' or '~/.kube/ketall.yaml'
 `
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "ketall",
-	Short:   "Like 'kubectl get all', but get _really_ all resources",
-	Long:    ketallLongDescription,
+	Use:     internal.CommandName,
+	Short:   "Like `kubectl get all`, but get _really_ all resources",
+	Long:    internal.HelpTextMapName(ketallLongDescription),
 	Args:    cobra.NoArgs,
-	Example: ketallExamples,
+	Example: internal.HelpTextMapName(ketallExamples),
 	Run: func(cmd *cobra.Command, args []string) {
 		ketall.KetAll(ketallOptions)
 	},

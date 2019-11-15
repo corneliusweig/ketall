@@ -75,31 +75,3 @@ func TestMainVersionCommand(t *testing.T) {
 	assert.Contains(t, stdout.String(), "ketall:")
 	assert.Empty(t, stderr.String())
 }
-
-func TestMainCompletionCommand(t *testing.T) {
-	tests := [][]string{
-		{"ketall", "completion", "zsh"},
-		{"ketall", "completion", "bash"},
-	}
-
-	for _, testargs := range tests {
-		t.Run(testargs[2], func(t *testing.T) {
-			origOpts := ketallOptions
-			newOpts, _, stdout, stderr := options.NewTestTestCmdOptions()
-
-			defer func(args []string) {
-				os.Args = args
-				ketallOptions = origOpts
-			}(os.Args)
-			os.Args = testargs
-			ketallOptions = newOpts
-
-			err := Execute()
-
-			assert.NoError(t, err)
-			assert.NotEmpty(t, stdout.String())
-			assert.Empty(t, stderr.String())
-		})
-
-	}
-}
