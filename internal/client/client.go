@@ -94,10 +94,10 @@ func fetchAvailableGroupResources(cache bool, scope string, flags *genericcliopt
 
 	resources, err := client.ServerPreferredResources()
 	if err != nil {
-		if resources == nil {
+		if resources == nil || !viper.GetBool(constants.FlagAllowIncomplete) {
 			return nil, errors.Wrap(err, "get preferred resources")
 		}
-		logrus.Warnf("Could not fetch complete list of api resources, results will be incomplete: %s", err)
+		logrus.Warnf("Could not fetch complete list of API resources, results will be incomplete: %s", err)
 	}
 
 	var grs []groupResource

@@ -90,6 +90,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", constants.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
 
 	rootCmd.Flags().BoolVar(&ketallOptions.UseCache, constants.FlagUseCache, false, "use cached list of server resources")
+	rootCmd.Flags().BoolVar(&ketallOptions.AllowIncomplete, constants.FlagAllowIncomplete, true, "show partial results when fetching of API resources fails")
 	rootCmd.Flags().StringVar(&ketallOptions.Scope, constants.FlagScope, "", "only resources with scope cluster|namespace")
 	rootCmd.Flags().StringVar(&ketallOptions.Since, constants.FlagSince, "", "only resources younger than given age")
 	rootCmd.Flags().StringVarP(&ketallOptions.Selector, constants.FlagSelector, "l", "", "selector (label query) to filter on, supports '=', '==', and '!='.(e.g. -l key1=value1,key2=value2)")
