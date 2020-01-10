@@ -31,6 +31,7 @@ type KetallOptions struct {
 	GenericCliFlags *genericclioptions.ConfigFlags
 	PrintFlags      KAPrintFlags
 	UseCache        bool
+	AllowIncomplete bool
 	Scope           string
 	Since           string
 	Selector        string

@@ -86,15 +86,16 @@ func Execute() error {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&ketallOptions.CfgFile, "config", "", "config file (default is $HOME/.kube/ketall.yaml)")
-	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", constants.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic)")
+	rootCmd.PersistentFlags().StringVar(&ketallOptions.CfgFile, "config", "", "Config file (default \"$HOME/.kube/ketall.yaml)\"")
+	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", constants.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic).")
 
-	rootCmd.Flags().BoolVar(&ketallOptions.UseCache, constants.FlagUseCache, false, "use cached list of server resources")
-	rootCmd.Flags().StringVar(&ketallOptions.Scope, constants.FlagScope, "", "only resources with scope cluster|namespace")
-	rootCmd.Flags().StringVar(&ketallOptions.Since, constants.FlagSince, "", "only resources younger than given age")
-	rootCmd.Flags().StringVarP(&ketallOptions.Selector, constants.FlagSelector, "l", "", "selector (label query) to filter on, supports '=', '==', and '!='.(e.g. -l key1=value1,key2=value2)")
+	rootCmd.Flags().BoolVar(&ketallOptions.UseCache, constants.FlagUseCache, false, "Use cached list of server resources.")
+	rootCmd.Flags().BoolVar(&ketallOptions.AllowIncomplete, constants.FlagAllowIncomplete, true, "Show partial results when fetching of API resources fails.")
+	rootCmd.Flags().StringVar(&ketallOptions.Scope, constants.FlagScope, "", "Only resources with scope cluster|namespace.")
+	rootCmd.Flags().StringVar(&ketallOptions.Since, constants.FlagSince, "", "Only resources younger than given age.")
+	rootCmd.Flags().StringVarP(&ketallOptions.Selector, constants.FlagSelector, "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.(e.g. -l key1=value1,key2=value2).")
 	rootCmd.Flags().StringVar(&ketallOptions.FieldSelector, constants.FlagFieldSelector, "", "Selector (field query) to filter on, supports '=', '==', and '!='.(e.g. --field-selector key1=value1,key2=value2). The common field queries for all types are metadata.name and metadata.namespace.")
-	rootCmd.Flags().StringSliceVar(&ketallOptions.Exclusions, constants.FlagExclude, []string{"events"}, "filter by resource name (plural form or short name)")
+	rootCmd.Flags().StringSliceVar(&ketallOptions.Exclusions, constants.FlagExclude, []string{"events"}, "Filter by resource name (plural form or short name).")
 
 	ketallOptions.GenericCliFlags.AddFlags(rootCmd.Flags())
 	ketallOptions.PrintFlags.AddFlags(rootCmd)
