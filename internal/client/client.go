@@ -94,7 +94,10 @@ func fetchAvailableGroupResources(cache bool, scope string, flags *genericcliopt
 
 	resources, err := client.ServerPreferredResources()
 	if err != nil {
-		return nil, errors.Wrap(err, "get preferred resources")
+		if resources == nil {
+			return nil, errors.Wrap(err, "get preferred resources")
+		}
+		logrus.Warnf("Could not fetch complete list of api resources, results will be incomplete: %s", err)
 	}
 
 	var grs []groupResource
