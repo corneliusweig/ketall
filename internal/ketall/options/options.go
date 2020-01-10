@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"os"
 
-	"github.com/corneliusweig/ketall/pkg/ketall/printer"
+	"github.com/corneliusweig/ketall/internal/ketall/printer"
 	"github.com/sirupsen/logrus"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/printers"

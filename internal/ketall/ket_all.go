@@ -20,10 +20,10 @@ import (
 	"io"
 	"text/tabwriter"
 
-	"github.com/corneliusweig/ketall/pkg/ketall/client"
-	"github.com/corneliusweig/ketall/pkg/ketall/filter"
-	"github.com/corneliusweig/ketall/pkg/ketall/options"
-	"github.com/corneliusweig/ketall/pkg/ketall/printer"
+	"github.com/corneliusweig/ketall/internal/ketall/client"
+	"github.com/corneliusweig/ketall/internal/ketall/filter"
+	"github.com/corneliusweig/ketall/internal/ketall/options"
+	"github.com/corneliusweig/ketall/internal/ketall/printer"
 	"github.com/sirupsen/logrus"
 	"k8s.io/cli-runtime/pkg/printers"
 )

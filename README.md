@@ -90,7 +90,7 @@ curl -Lo ketall.gz https://github.com/corneliusweig/ketall/releases/download/v1.
 #### Build on host
 
 Requirements:
- - go 1.11 or newer
+ - go 1.13 or newer
  - GNU make
  - git
 
