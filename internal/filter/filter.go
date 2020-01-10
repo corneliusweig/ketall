@@ -21,8 +21,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/corneliusweig/ketall/pkg/ketall/constants"
-	"github.com/corneliusweig/ketall/pkg/ketall/util"
+	"github.com/corneliusweig/ketall/internal/constants"
+	"github.com/corneliusweig/ketall/internal/util"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
