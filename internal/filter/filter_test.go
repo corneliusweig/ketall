@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/corneliusweig/ketall/internal/ketall/util"
+	"github.com/corneliusweig/ketall/internal/util"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

@@ -19,7 +19,7 @@ package cmd
 import (
 	"text/template"
 
-	"github.com/corneliusweig/ketall/internal/ketall/version"
+	"github.com/corneliusweig/ketall/internal/version"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )

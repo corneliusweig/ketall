@@ -20,7 +20,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/corneliusweig/ketall/internal/ketall/options"
+	"github.com/corneliusweig/ketall/internal/options"
 	"github.com/stretchr/testify/assert"
 )
 

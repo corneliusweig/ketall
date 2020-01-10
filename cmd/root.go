@@ -27,9 +27,9 @@ import (
 	"k8s.io/client-go/util/homedir"
 
 	"github.com/corneliusweig/ketall/cmd/internal"
-	"github.com/corneliusweig/ketall/internal/ketall"
-	"github.com/corneliusweig/ketall/internal/ketall/constants"
-	"github.com/corneliusweig/ketall/internal/ketall/options"
+	ketall "github.com/corneliusweig/ketall/internal"
+	"github.com/corneliusweig/ketall/internal/constants"
+	"github.com/corneliusweig/ketall/internal/options"
 )
 
 var (

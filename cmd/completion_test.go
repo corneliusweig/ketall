@@ -24,7 +24,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/corneliusweig/ketall/internal/ketall/options"
+	"github.com/corneliusweig/ketall/internal/options"
 )
 
 func TestMainCompletionCommand(t *testing.T) {
