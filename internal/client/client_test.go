@@ -63,6 +63,13 @@ func TestExtractRelevantResourceNames(t *testing.T) {
 			exclude:   []string{"baz"},
 			expected:  []string{"bar.puorg"},
 		},
+		{
+			testName:  "two filtered by fully-qualified resource name",
+			resources: []v1.APIResource{{Name: "foo"}, {Name: "bar"}},
+			groups:    []string{"group", "puorg"},
+			exclude:   []string{"foo.group"},
+			expected:  []string{"bar.puorg"},
+		},
 	}
 
 	for _, test := range tests {
