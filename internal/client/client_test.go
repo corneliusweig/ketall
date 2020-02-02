@@ -26,56 +26,65 @@ import (
 func TestExtractRelevantResourceNames(t *testing.T) {
 	var tests = []struct {
 		testName  string
-		resources []v1.APIResource
-		groups    []string
+		resources []groupResource
 		exclude   []string
 		expected  []string
 	}{
 		{
-			testName:  "a single resource",
-			resources: []v1.APIResource{{Name: "foo"}},
-			groups:    []string{"group"},
-			expected:  []string{"foo.group"},
+			testName: "a single resource",
+			resources: []groupResource{
+				groupResource{APIResource: v1.APIResource{Name: "foo"}, APIGroup: "group"},
+			},
+			expected: []string{"foo.group"},
 		},
 		{
-			testName:  "two resources, without group",
-			resources: []v1.APIResource{{Name: "foo"}, {Name: "bar"}},
-			groups:    []string{"group", ""},
-			expected:  []string{"bar", "foo.group"},
+			testName: "two resources, without group",
+			resources: []groupResource{
+				groupResource{APIResource: v1.APIResource{Name: "foo"}, APIGroup: "group"},
+				groupResource{APIResource: v1.APIResource{Name: "bar"}, APIGroup: ""},
+			},
+			expected: []string{"bar", "foo.group"},
 		},
 		{
-			testName:  "two resources, same group",
-			resources: []v1.APIResource{{Name: "foo"}, {Name: "bar"}},
-			groups:    []string{"group", "group"},
-			expected:  []string{"bar.group", "foo.group"},
+			testName: "two resources, same group",
+			resources: []groupResource{
+				groupResource{APIResource: v1.APIResource{Name: "foo"}, APIGroup: "group"},
+				groupResource{APIResource: v1.APIResource{Name: "bar"}, APIGroup: "group"},
+			},
+			expected: []string{"bar.group", "foo.group"},
 		},
 		{
-			testName:  "two filtered by Name",
-			resources: []v1.APIResource{{Name: "foo"}, {Name: "bar"}},
-			groups:    []string{"group", "puorg"},
-			exclude:   []string{"bar"},
-			expected:  []string{"foo.group"},
+			testName: "two filtered by Name",
+			resources: []groupResource{
+				groupResource{APIResource: v1.APIResource{Name: "foo"}, APIGroup: "group"},
+				groupResource{APIResource: v1.APIResource{Name: "bar"}, APIGroup: "puorg"},
+			},
+			exclude:  []string{"bar"},
+			expected: []string{"foo.group"},
 		},
 		{
-			testName:  "two filtered by ShortName",
-			resources: []v1.APIResource{{Name: "foo", ShortNames: []string{"baz"}}, {Name: "bar"}},
-			groups:    []string{"group", "puorg"},
-			exclude:   []string{"baz"},
-			expected:  []string{"bar.puorg"},
+			testName: "two filtered by ShortName",
+			resources: []groupResource{
+				groupResource{APIResource: v1.APIResource{Name: "foo", ShortNames: []string{"baz"}}, APIGroup: "group"},
+				groupResource{APIResource: v1.APIResource{Name: "bar"}, APIGroup: "puorg"},
+			},
+			exclude:  []string{"baz"},
+			expected: []string{"bar.puorg"},
+		},
+		{
+			testName: "two filtered by fully-qualified resource name",
+			resources: []groupResource{
+				groupResource{APIResource: v1.APIResource{Name: "foo"}, APIGroup: "group"},
+				groupResource{APIResource: v1.APIResource{Name: "bar"}, APIGroup: "puorg"},
+			},
+			exclude:  []string{"foo.group"},
+			expected: []string{"bar.puorg"},
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.testName, func(t *testing.T) {
-			var grs []groupResource
-			for i := range test.resources {
-				grs = append(grs, groupResource{
-					APIGroup:    test.groups[i],
-					APIResource: test.resources[i],
-				})
-			}
-
-			names := extractRelevantResources(grs, test.exclude)
+			names := extractRelevantResources(test.resources, test.exclude)
 			assert.Equal(t, test.expected, ToResourceTypes(names))
 		})
 	}
