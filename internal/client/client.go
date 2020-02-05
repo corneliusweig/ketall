@@ -142,6 +142,7 @@ func extractRelevantResources(grs []groupResource, exclusions []string) []groupR
 		name := r.fullName()
 		resourceIds := r.APIResource.ShortNames
 		resourceIds = append(resourceIds, r.APIResource.Name)
+		resourceIds = append(resourceIds, r.APIResource.Kind)
 		resourceIds = append(resourceIds, name)
 		if forbidden.HasAny(resourceIds...) {
 			logrus.Debugf("Excluding %s", name)

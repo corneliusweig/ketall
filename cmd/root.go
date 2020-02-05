@@ -48,7 +48,7 @@ namespaced resources.
 More on https://github.com/corneliusweig/ketall/blob/v1.3.0/doc/USAGE.md#usage
 `
 	ketallExamples = `
-  Get all resources, excluding events
+  Get all resources, excluding events and podmetrics
    $ ketall
 
   Get all resources, including events
@@ -95,7 +95,7 @@ func init() {
 	rootCmd.Flags().StringVar(&ketallOptions.Since, constants.FlagSince, "", "Only resources younger than given age.")
 	rootCmd.Flags().StringVarP(&ketallOptions.Selector, constants.FlagSelector, "l", "", "Selector (label query) to filter on, supports '=', '==', and '!='.(e.g. -l key1=value1,key2=value2).")
 	rootCmd.Flags().StringVar(&ketallOptions.FieldSelector, constants.FlagFieldSelector, "", "Selector (field query) to filter on, supports '=', '==', and '!='.(e.g. --field-selector key1=value1,key2=value2). The common field queries for all types are metadata.name and metadata.namespace.")
-	rootCmd.Flags().StringSliceVar(&ketallOptions.Exclusions, constants.FlagExclude, []string{"events"}, "Filter by resource name (plural form or short name).")
+	rootCmd.Flags().StringSliceVar(&ketallOptions.Exclusions, constants.FlagExclude, []string{"Event", "PodMetrics"}, "Filter by resource name (plural form or short name).")
 
 	ketallOptions.GenericCliFlags.AddFlags(rootCmd.Flags())
 	ketallOptions.PrintFlags.AddFlags(rootCmd)
