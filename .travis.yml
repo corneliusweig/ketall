@@ -15,30 +15,30 @@ script:
 - make lint
 - make dev
 
-after_success:
-- bash <(curl -s https://codecov.io/bash)
+#after_success:
+#- bash <(curl -s https://codecov.io/bash)
 
 before_deploy:
 - hack/install-gox.sh
 - make deploy
 
-deploy:
-  provider: releases
-  api_key:
-    secure: PrCkuSXDZFx8v+0TPYKD5fGy4ttxKJHiIYzqnXwhQV8LpelBnulwbnVjpQEVfbD4k3NLkyToucELwSc9hMf7DYWQ01dq5naA8HFXVycLFlerxYDB42Khstg/uq7nYKU7uMY/YoTWFVFOSfiFeTdfkSaGfTlGgq0P2UG1ePV6woLqXfT8uum+Tb4EPyicecW1hpbtTL0zv6s2pwPigObKvXWLp0/9jNDfQKz2kgu0yMDblZPbeZq5oFR3YnoLNrL9/oGHMhgwFn24Pi3OGvhr9LValrpUB2H4dT+tghWdGIIB3QOLEpbdgOYfxo2kG3stGeHD2ZQVbajR7xlF1PJcMA3yKmJtZdBpPrLf2byJe7uV681y5HMWZRPdhLVez0cyWLd9iPT69ZB/p3YCqs+5eQoPYRAk7Z/TwiQ4wxBEBC+CCAuhdNq9zrDOv6gRa8sHHY9OzfEL+OyWb0AKiuMqdOFNQ7gyvbzh+eNT0bJI0PUqg0j8Bh7ikTeeMDeij8dEdE+3+HlC+Uh4PbBM1TjJHjaI7kjsoV/OuLr5QtD0r1knUPQZk573SYRY9u666T+fZi9Q2VofA+llydT7uClYv9ZCOFCXZxWkWPmpOCjkU0ewW9CPLJPpaVF0TcfDKs7Sre0fhj37ReiQ+27IkofO46fP05r66HWEYHbFe0zTGN4=
-  file:
-  - out/get-all-amd64-darwin.tar.gz
-  - out/get-all-amd64-darwin.tar.gz.sha256
-  - out/get-all-amd64-linux.tar.gz
-  - out/get-all-amd64-linux.tar.gz.sha256
-  - out/get-all-amd64-windows.zip
-  - out/get-all-amd64-windows.zip.sha256
-  - out/ketall-amd64-darwin.tar.gz
-  - out/ketall-amd64-darwin.tar.gz.sha256
-  - out/ketall-amd64-linux.tar.gz
-  - out/ketall-amd64-linux.tar.gz.sha256
-  - out/ketall-amd64-windows.zip
-  - out/ketall-amd64-windows.zip.sha256
-  skip_cleanup: true
-  on:
-    tags: true
+#deploy:
+#  provider: releases
+#  api_key:
+#    secure: PrCkuSXDZFx8v+0TPYKD5fGy4ttxKJHiIYzqnXwhQV8LpelBnulwbnVjpQEVfbD4k3NLkyToucELwSc9hMf7DYWQ01dq5naA8HFXVycLFlerxYDB42Khstg/uq7nYKU7uMY/YoTWFVFOSfiFeTdfkSaGfTlGgq0P2UG1ePV6woLqXfT8uum+Tb4EPyicecW1hpbtTL0zv6s2pwPigObKvXWLp0/9jNDfQKz2kgu0yMDblZPbeZq5oFR3YnoLNrL9/oGHMhgwFn24Pi3OGvhr9LValrpUB2H4dT+tghWdGIIB3QOLEpbdgOYfxo2kG3stGeHD2ZQVbajR7xlF1PJcMA3yKmJtZdBpPrLf2byJe7uV681y5HMWZRPdhLVez0cyWLd9iPT69ZB/p3YCqs+5eQoPYRAk7Z/TwiQ4wxBEBC+CCAuhdNq9zrDOv6gRa8sHHY9OzfEL+OyWb0AKiuMqdOFNQ7gyvbzh+eNT0bJI0PUqg0j8Bh7ikTeeMDeij8dEdE+3+HlC+Uh4PbBM1TjJHjaI7kjsoV/OuLr5QtD0r1knUPQZk573SYRY9u666T+fZi9Q2VofA+llydT7uClYv9ZCOFCXZxWkWPmpOCjkU0ewW9CPLJPpaVF0TcfDKs7Sre0fhj37ReiQ+27IkofO46fP05r66HWEYHbFe0zTGN4=
+#  file:
+#  - out/get-all-amd64-darwin.tar.gz
+#  - out/get-all-amd64-darwin.tar.gz.sha256
+#  - out/get-all-amd64-linux.tar.gz
+#  - out/get-all-amd64-linux.tar.gz.sha256
+#  - out/get-all-amd64-windows.zip
+#  - out/get-all-amd64-windows.zip.sha256
+#  - out/ketall-amd64-darwin.tar.gz
+#  - out/ketall-amd64-darwin.tar.gz.sha256
+#  - out/ketall-amd64-linux.tar.gz
+#  - out/ketall-amd64-linux.tar.gz.sha256
+#  - out/ketall-amd64-windows.zip
+#  - out/ketall-amd64-windows.zip.sha256
+#  skip_cleanup: true
+#  on:
+#    tags: true
