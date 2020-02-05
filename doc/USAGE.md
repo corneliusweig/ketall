@@ -13,7 +13,7 @@ kubectl get-all
 - `--only-scope=cluster` will only show cluster level resources, such as `ClusterRole`, `Namespace`, or `PersistentVolume`.
 - `--only-scope=namespace` will only show namespaced resources, such as `ServiceAccount`, `Role`, `ConfigMap`, or `Endpoint`.
 - `--selector` (`-l`) will filter by label query, supports `=`, `==`, and `!=`.(e.g. `-l key1=value1,key2=value2`)
-- `--exclude` will filter out the given resources (either plural names `componentstatuses` or short form `cs`). Defaults to `events` because those are rarely useful.
+- `--exclude` will filter out the given resources. Accepts either resource names (e.g. `componentstatuses` or short form `cs`) or API Kinds (e.g. `ComponentStatus`). Defaults to `[Event, PodMetrics]` because those are rarely useful.
 - ...and many standard `kubectl` options. Have a look at `kubectl get-all --help` for a full list of supported flags.
 - `--use-cache` will consider the http cache to determine the server resources to look at. Disabled by default.
 - `--allow-incomplete` will show partial results when fetching the list of API resources fails. Enabled by default.
