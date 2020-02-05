@@ -17,6 +17,7 @@
 set -euo pipefail
 
 HACK=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+export GOPATH="$(go env GOPATH)"
 
 if ! [[ -x "$GOPATH/bin/golangci-lint" ]]
 then
