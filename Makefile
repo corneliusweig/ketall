@@ -30,7 +30,7 @@ ASSETS     := $(BUILDDIR)/ketall-$(GOARCH)-darwin.tar.gz $(BUILDDIR)/ketall-$(GO
 ASSETSKREW := $(BUILDDIR)/get-all-$(GOARCH)-darwin.tar.gz $(BUILDDIR)/get-all-$(GOARCH)-linux.tar.gz $(BUILDDIR)/get-all-$(GOARCH)-windows.zip
 CHECKSUMS  := $(patsubst %,%.sha256,$(ASSETS) $(ASSETSKREW))
 
-VERSION_PACKAGE := $(REPOPATH)/pkg/ketall/version
+VERSION_PACKAGE := $(REPOPATH)/internal/version
 
 DATE_FMT = %Y-%m-%dT%H:%M:%SZ
 ifdef SOURCE_DATE_EPOCH
