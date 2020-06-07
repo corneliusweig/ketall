@@ -51,6 +51,10 @@ else
   COMPRESS:=gzip --best -k -c
 endif
 
+define doUPX
+	strip $@ && upx -9q $@
+endef
+
 GO_FILES  := $(shell find . -type f -name '*.go')
 
 .PHONY: test
@@ -85,11 +89,12 @@ dev: GO_LDFLAGS := $(subst -s -w,,$(GO_LDFLAGS))
 dev:
 	go build -race -ldflags $(GO_LDFLAGS) -o ketall main.go
 
+# TODO(corneliusweig): gox does not support the -trimpath flag, see https://github.com/mitchellh/gox/pull/138
 build-ketall: $(GO_FILES) $(BUILDDIR)
-	gox -osarch="$(PLATFORMS)" -ldflags $(GO_LDFLAGS) -output="out/ketall-{{.Arch}}-{{.OS}}"
+	GOFLAGS="-trimpath" gox -osarch="$(PLATFORMS)" -tags netgo -ldflags $(GO_LDFLAGS) -output="$(BUILDDIR)/ketall-{{.Arch}}-{{.OS}}"
 
 build-get-all: $(GO_FILES) $(BUILDDIR)
-	gox -osarch="$(PLATFORMS)" -tags getall -ldflags $(GO_LDFLAGS) -output="out/get-all-{{.Arch}}-{{.OS}}"
+	GOFLAGS="-trimpath" gox -osarch="$(PLATFORMS)" -tags getall,netgo -ldflags $(GO_LDFLAGS) -output="$(BUILDDIR)/get-all-{{.Arch}}-{{.OS}}"
 
 .PHONY: lint
 lint:
@@ -131,9 +136,15 @@ clean:
 	$(RM) -r $(BUILDDIR) ketall
 
 $(BUILDDIR)/ketall-amd64-linux: build-ketall
+	$(doUPX)
 $(BUILDDIR)/ketall-amd64-darwin: build-ketall
+	$(doUPX)
 $(BUILDDIR)/ketall-amd64-windows.exe: build-ketall
+	$(doUPX)
 
 $(BUILDDIR)/get-all-amd64-linux: build-get-all
+	$(doUPX)
 $(BUILDDIR)/get-all-amd64-darwin: build-get-all
+	$(doUPX)
 $(BUILDDIR)/get-all-amd64-windows.exe: build-get-all
+	$(doUPX)
