@@ -1,15 +1,15 @@
 apiVersion: krew.googlecontainertools.github.com/v1alpha2
 kind: Plugin
 metadata:
-  name: get-all
+  name: getall
 spec:
   version: {{ .TagName }}
   platforms:
-  - {{ addURIAndSha "https://github.com/corneliusweig/ketall/releases/download/{{ .TagName }}/get-all-amd64-linux.tar.gz" .TagName }}
-    bin: get-all-amd64-linux
+  - {{ addURIAndSha "https://github.com/corneliusweig/ketall/releases/download/{{ .TagName }}/getall-amd64-linux.tar.gz" .TagName }}
+    bin: getall-amd64-linux
 
     files:
-    - from: get-all-amd64-linux
+    - from: getall-amd64-linux
       to: .
     - from: LICENSE
       to: .
@@ -17,10 +17,10 @@ spec:
       matchLabels:
         os: linux
         arch: amd64
-  - {{ addURIAndSha "https://github.com/corneliusweig/ketall/releases/download/{{ .TagName }}/get-all-amd64-darwin.tar.gz" .TagName }}
-    bin: get-all-amd64-darwin
+  - {{ addURIAndSha "https://github.com/corneliusweig/ketall/releases/download/{{ .TagName }}/getall-amd64-darwin.tar.gz" .TagName }}
+    bin: getall-amd64-darwin
     files:
-    - from: get-all-amd64-darwin
+    - from: getall-amd64-darwin
       to: .
     - from: LICENSE
       to: .
@@ -28,10 +28,10 @@ spec:
       matchLabels:
         os: darwin
         arch: amd64
-  - {{ addURIAndSha "https://github.com/corneliusweig/ketall/releases/download/{{ .TagName }}/get-all-amd64-windows.zip" .TagName }}
-    bin: get-all-amd64-windows.exe
+  - {{ addURIAndSha "https://github.com/corneliusweig/ketall/releases/download/{{ .TagName }}/getall-amd64-windows.zip" .TagName }}
+    bin: getall-amd64-windows.exe
     files:
-    - from: get-all-amd64-windows.exe
+    - from: getall-amd64-windows.exe
       to: .
     - from: LICENSE
       to: .

@@ -20,11 +20,11 @@ package internal
 
 import "strings"
 
-const CommandName = "get-all"
+const CommandName = "getall"
 
 func HelpTextMapName(text string) string {
 	return strings.NewReplacer(
-		"Ketall", "Kubectl get-all",
-		"$ ketall", "$ kubectl get-all",
+		"Ketall", "Kubectl getall",
+		"$ ketall", "$ kubectl getall",
 	).Replace(text)
 }

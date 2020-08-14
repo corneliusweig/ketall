@@ -63,9 +63,9 @@ Krew is a `kubectl` plugin manager. If you have not yet installed `krew`, get it
 [https://github.com/kubernetes-sigs/krew](https://github.com/kubernetes-sigs/krew).
 Then installation is as simple as
 ```bash
-kubectl krew install get-all
+kubectl krew install getall
 ```
-The plugin will be available as `kubectl get-all`, see [doc/USAGE](doc/USAGE.md) for further details.
+The plugin will be available as `kubectl getall`, see [doc/USAGE](doc/USAGE.md) for further details.
 
 ### Binaries
 When using the binaries for installation, also have a look at [doc/USAGE](doc/USAGE.md).

@@ -27,7 +27,7 @@ BUILDDIR  := out
 PLATFORMS ?= darwin/amd64 windows/amd64 linux/amd64
 DISTFILE  := $(BUILDDIR)/$(VERSION).tar.gz
 ASSETS     := $(BUILDDIR)/ketall-$(GOARCH)-darwin.tar.gz $(BUILDDIR)/ketall-$(GOARCH)-linux.tar.gz $(BUILDDIR)/ketall-$(GOARCH)-windows.zip
-ASSETSKREW := $(BUILDDIR)/get-all-$(GOARCH)-darwin.tar.gz $(BUILDDIR)/get-all-$(GOARCH)-linux.tar.gz $(BUILDDIR)/get-all-$(GOARCH)-windows.zip
+ASSETSKREW := $(BUILDDIR)/getall-$(GOARCH)-darwin.tar.gz $(BUILDDIR)/getall-$(GOARCH)-linux.tar.gz $(BUILDDIR)/getall-$(GOARCH)-windows.zip
 CHECKSUMS  := $(patsubst %,%.sha256,$(ASSETS) $(ASSETSKREW))
 
 VERSION_PACKAGE := $(REPOPATH)/internal/version
@@ -74,7 +74,7 @@ help:
 	@echo '  - lint:     run golangci-lint'
 	@echo '  - test:     run unit tests'
 	@echo '  - build-ketall:   build binaries for all supported platforms'
-	@echo '  - build-get-all:  build binaries for all supported platforms'
+	@echo '  - build-getall:  build binaries for all supported platforms'
 
 .PHONY: coverage
 coverage: $(BUILDDIR)
@@ -93,8 +93,8 @@ dev:
 build-ketall: $(GO_FILES) $(BUILDDIR)
 	GOFLAGS="-trimpath" gox -osarch="$(PLATFORMS)" -tags netgo -ldflags $(GO_LDFLAGS) -output="$(BUILDDIR)/ketall-{{.Arch}}-{{.OS}}"
 
-build-get-all: $(GO_FILES) $(BUILDDIR)
-	GOFLAGS="-trimpath" gox -osarch="$(PLATFORMS)" -tags getall,netgo -ldflags $(GO_LDFLAGS) -output="$(BUILDDIR)/get-all-{{.Arch}}-{{.OS}}"
+build-getall: $(GO_FILES) $(BUILDDIR)
+	GOFLAGS="-trimpath" gox -osarch="$(PLATFORMS)" -tags getall,netgo -ldflags $(GO_LDFLAGS) -output="$(BUILDDIR)/getall-{{.Arch}}-{{.OS}}"
 
 .PHONY: lint
 lint:
@@ -142,9 +142,9 @@ $(BUILDDIR)/ketall-amd64-darwin: build-ketall
 $(BUILDDIR)/ketall-amd64-windows.exe: build-ketall
 	$(doUPX)
 
-$(BUILDDIR)/get-all-amd64-linux: build-get-all
+$(BUILDDIR)/getall-amd64-linux: build-getall
 	$(doUPX)
-$(BUILDDIR)/get-all-amd64-darwin: build-get-all
+$(BUILDDIR)/getall-amd64-darwin: build-getall
 	$(doUPX)
-$(BUILDDIR)/get-all-amd64-windows.exe: build-get-all
+$(BUILDDIR)/getall-amd64-windows.exe: build-getall
 	$(doUPX)
