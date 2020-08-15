@@ -22,7 +22,7 @@ export GOPATH="$(go env GOPATH)"
 if ! [[ -x "$GOPATH/bin/golangci-lint" ]]
 then
    echo 'Installing golangci-lint'
-   "${HACK}"/install_golangci-lint.sh -b "$GOPATH/bin" v1.22.2
+   "${HACK}"/install_golangci-lint.sh -b "$GOPATH/bin" v1.30.0
 fi
 
 "$GOPATH/bin/golangci-lint" run \
