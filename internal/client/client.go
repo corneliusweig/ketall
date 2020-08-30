@@ -17,6 +17,7 @@ limitations under the License.
 package client
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strings"
@@ -28,6 +29,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"golang.org/x/sync/semaphore"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -36,6 +38,8 @@ import (
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/resource"
 )
+
+var errEmpty = errors.New("no resources found")
 
 // groupResource contains the APIGroup and APIResource
 type groupResource struct {
@@ -59,7 +63,7 @@ func GetAllServerResources(flags *genericclioptions.ConfigFlags) (runtime.Object
 		return response, nil
 	}
 
-	return fetchResourcesIncremental(flags, grs...)
+	return fetchResourcesIncremental(context.TODO(), flags, grs...)
 }
 
 func getExclusions() []string {
@@ -133,7 +137,7 @@ func groupResources(cache bool, scope string, flags *genericclioptions.ConfigFla
 
 	ret := grs[:0]
 	for _, r := range grs {
-		name := r.fullName()
+		name := r.String()
 		resourceIds := r.APIResource.ShortNames
 		resourceIds = append(resourceIds, r.APIResource.Name)
 		resourceIds = append(resourceIds, r.APIResource.Kind)
@@ -151,7 +155,7 @@ func groupResources(cache bool, scope string, flags *genericclioptions.ConfigFla
 func fetchResourcesBulk(flags resource.RESTClientGetter, grs ...groupResource) (runtime.Object, error) {
 	var resources []string
 	for _, gr := range grs {
-		resources = append(resources, gr.fullName())
+		resources = append(resources, gr.String())
 	}
 	logrus.Debugf("Resources to fetch: %s", resources)
 
@@ -170,41 +174,45 @@ func fetchResourcesBulk(flags resource.RESTClientGetter, grs ...groupResource) (
 }
 
 // Fetches all objects of the given resources one-by-one. This can be used as a fallback when fetchResourcesBulk fails.
-func fetchResourcesIncremental(flags resource.RESTClientGetter, grs ...groupResource) (runtime.Object, error) {
+func fetchResourcesIncremental(ctx context.Context, flags resource.RESTClientGetter, grs ...groupResource) (runtime.Object, error) {
+	// TODO(corneliusweig): this needs to properly pass ctx around
 	logrus.Debug("Fetch resources incrementally")
-	wg := sync.WaitGroup{}
+	start := time.Now()
 
-	objsChan := make(chan runtime.Object)
+	maxInflight := viper.GetInt64(constants.FlagConcurrency)
+	sem := semaphore.NewWeighted(maxInflight) // restrict parallelism to 64 inflight requests
+
+	var mu sync.Mutex // mu guards ret
+	var ret []runtime.Object
+
+	var wg sync.WaitGroup
 	for _, gr := range grs {
-		gr := gr
 		wg.Add(1)
-		go func(sendObj chan<- runtime.Object) {
+		go func(gr groupResource) {
 			defer wg.Done()
-			if o, e := fetchResourcesBulk(flags, gr); e != nil {
-				logrus.Warnf("Cannot fetch: %s", e)
-			} else {
-				sendObj <- o
+			if err := sem.Acquire(ctx, 1); err != nil {
+				return // context cancelled
 			}
-		}(objsChan)
+			defer sem.Release(1)
+			obj, err := fetchResourcesBulk(flags, gr)
+			if err != nil {
+				logrus.Warnf("Cannot fetch: %v", err)
+				return
+			}
+			mu.Lock()
+			ret = append(ret, obj)
+			mu.Unlock()
+		}(gr)
+	}
+	wg.Wait()
+	logrus.Debugf("Requests done (elapsed %s)", duration.HumanDuration(time.Since(start)))
+
+	if len(ret) == 0 {
+		logrus.Warnf("No resources found, are you authorized? Try to narrow the scope with --namespace.")
+		return nil, errEmpty
 	}
 
-	go func() {
-		start := time.Now()
-		wg.Wait()
-		close(objsChan)
-		logrus.Debugf("Requests done (elapsed %s)", duration.HumanDuration(time.Since(start)))
-	}()
-
-	var objs []runtime.Object
-	for o := range objsChan {
-		objs = append(objs, o)
-	}
-
-	if len(objs) == 0 {
-		return nil, fmt.Errorf("not authorized to list any resources, try to narrow the scope with --namespace")
-	}
-
-	return util.ToV1List(objs), nil
+	return util.ToV1List(ret), nil
 }
 
 func getResourceScope(scope string) (cluster, namespace bool, err error) {
@@ -224,8 +232,8 @@ func getResourceScope(scope string) (cluster, namespace bool, err error) {
 	return
 }
 
-// Extracts the full name including APIGroup, e.g. 'deployment.apps'
-func (g groupResource) fullName() string {
+// String returns the canonical full name of the groupResource.
+func (g groupResource) String() string {
 	if g.APIGroup == "" {
 		return g.APIResource.Name
 	}
