@@ -168,6 +168,7 @@ func fetchResourcesBulk(flags resource.RESTClientGetter, resourceTypes ...groupR
 		ResourceTypes(resourceNames...).
 		NamespaceParam(ns).DefaultNamespace().AllNamespaces(ns == "").
 		LabelSelectorParam(selector).FieldSelectorParam(fieldSelector).SelectAllParam(selector == "" && fieldSelector == "").
+		Flatten().
 		Latest()
 
 	return request.Do().Object()
