@@ -17,4 +17,4 @@ require (
 	k8s.io/client-go v0.19.0
 )
 
-go 1.14
+go 1.15
