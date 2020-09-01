@@ -17,6 +17,7 @@ limitations under the License.
 package client
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"strings"
@@ -28,6 +29,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
+	"golang.org/x/sync/semaphore"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -36,6 +38,8 @@ import (
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/resource"
 )
+
+var errEmpty = errors.New("no resources found")
 
 // groupResource contains the APIGroup and APIResource
 type groupResource struct {
@@ -47,21 +51,19 @@ func GetAllServerResources(flags *genericclioptions.ConfigFlags) (runtime.Object
 	useCache := viper.GetBool(constants.FlagUseCache)
 	scope := viper.GetString(constants.FlagScope)
 
-	grs, err := fetchAvailableGroupResources(useCache, scope, flags)
+	grs, err := groupResources(useCache, scope, flags)
 	if err != nil {
 		return nil, errors.Wrap(err, "fetch available group resources")
 	}
 
-	resources := extractRelevantResources(grs, getExclusions())
-
 	start := time.Now()
-	response, err := fetchResourcesBulk(flags, resources...)
+	response, err := fetchResourcesBulk(flags, grs...)
 	logrus.Debugf("Initial fetchResourcesBulk done (%s)", duration.HumanDuration(time.Since(start)))
 	if err == nil {
 		return response, nil
 	}
 
-	return fetchResourcesIncremental(flags, resources...)
+	return fetchResourcesIncremental(context.TODO(), flags, grs...)
 }
 
 func getExclusions() []string {
@@ -77,7 +79,7 @@ func getExclusions() []string {
 	return exclusions
 }
 
-func fetchAvailableGroupResources(cache bool, scope string, flags *genericclioptions.ConfigFlags) ([]groupResource, error) {
+func groupResources(cache bool, scope string, flags *genericclioptions.ConfigFlags) ([]groupResource, error) {
 	client, err := flags.ToDiscoveryClient()
 	if err != nil {
 		return nil, errors.Wrap(err, "discovery client")
@@ -87,7 +89,7 @@ func fetchAvailableGroupResources(cache bool, scope string, flags *genericcliopt
 		client.Invalidate()
 	}
 
-	skipCluster, skipNamespace, err := getResourceScope(scope)
+	scopeCluster, scopeNamespace, err := getResourceScope(scope)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +116,7 @@ func fetchAvailableGroupResources(cache bool, scope string, flags *genericcliopt
 				continue
 			}
 
-			if (r.Namespaced && skipNamespace) || (!r.Namespaced && skipCluster) {
+			if (r.Namespaced && scopeCluster) || (!r.Namespaced && scopeNamespace) {
 				continue
 			}
 
@@ -130,34 +132,32 @@ func fetchAvailableGroupResources(cache bool, scope string, flags *genericcliopt
 		}
 	}
 
-	return grs, nil
-}
-
-func extractRelevantResources(grs []groupResource, exclusions []string) []groupResource {
 	sort.Stable(sortableGroupResource(grs))
-	forbidden := sets.NewString(exclusions...)
+	blocked := sets.NewString(getExclusions()...)
 
-	var result []groupResource
+	ret := grs[:0]
 	for _, r := range grs {
-		name := r.fullName()
+		name := r.String()
 		resourceIds := r.APIResource.ShortNames
 		resourceIds = append(resourceIds, r.APIResource.Name)
 		resourceIds = append(resourceIds, r.APIResource.Kind)
 		resourceIds = append(resourceIds, name)
-		if forbidden.HasAny(resourceIds...) {
+		if blocked.HasAny(resourceIds...) {
 			logrus.Debugf("Excluding %s", name)
 			continue
 		}
-		result = append(result, r)
+		ret = append(ret, r)
 	}
-
-	return result
+	return ret, nil
 }
 
 // Fetches all objects in bulk. This is much faster than incrementally but may fail due to missing rights
-func fetchResourcesBulk(flags resource.RESTClientGetter, resourceTypes ...groupResource) (runtime.Object, error) {
-	resourceNames := ToResourceTypes(resourceTypes)
-	logrus.Debugf("Resources to fetch: %s", resourceNames)
+func fetchResourcesBulk(flags resource.RESTClientGetter, grs ...groupResource) (runtime.Object, error) {
+	var resources []string
+	for _, gr := range grs {
+		resources = append(resources, gr.String())
+	}
+	logrus.Debugf("Resources to fetch: %s", resources)
 
 	ns := viper.GetString(constants.FlagNamespace)
 	selector := viper.GetString(constants.FlagSelector)
@@ -165,7 +165,7 @@ func fetchResourcesBulk(flags resource.RESTClientGetter, resourceTypes ...groupR
 
 	request := resource.NewBuilder(flags).
 		Unstructured().
-		ResourceTypes(resourceNames...).
+		ResourceTypes(resources...).
 		NamespaceParam(ns).DefaultNamespace().AllNamespaces(ns == "").
 		LabelSelectorParam(selector).FieldSelectorParam(fieldSelector).SelectAllParam(selector == "" && fieldSelector == "").
 		Flatten().
@@ -175,62 +175,66 @@ func fetchResourcesBulk(flags resource.RESTClientGetter, resourceTypes ...groupR
 }
 
 // Fetches all objects of the given resources one-by-one. This can be used as a fallback when fetchResourcesBulk fails.
-func fetchResourcesIncremental(flags resource.RESTClientGetter, rs ...groupResource) (runtime.Object, error) {
+func fetchResourcesIncremental(ctx context.Context, flags resource.RESTClientGetter, grs ...groupResource) (runtime.Object, error) {
+	// TODO(corneliusweig): this needs to properly pass ctx around
 	logrus.Debug("Fetch resources incrementally")
-	group := sync.WaitGroup{}
+	start := time.Now()
 
-	objsChan := make(chan runtime.Object)
-	for _, r := range rs {
-		r := r
-		group.Add(1)
-		go func(sendObj chan<- runtime.Object) {
-			defer group.Done()
-			if o, e := fetchResourcesBulk(flags, r); e != nil {
-				logrus.Warnf("Cannot fetch: %s", e)
-			} else {
-				sendObj <- o
+	maxInflight := viper.GetInt64(constants.FlagConcurrency)
+	sem := semaphore.NewWeighted(maxInflight) // restrict parallelism to 64 inflight requests
+
+	var mu sync.Mutex // mu guards ret
+	var ret []runtime.Object
+
+	var wg sync.WaitGroup
+	for _, gr := range grs {
+		wg.Add(1)
+		go func(gr groupResource) {
+			defer wg.Done()
+			if err := sem.Acquire(ctx, 1); err != nil {
+				return // context cancelled
 			}
-		}(objsChan)
+			defer sem.Release(1)
+			obj, err := fetchResourcesBulk(flags, gr)
+			if err != nil {
+				logrus.Warnf("Cannot fetch: %v", err)
+				return
+			}
+			mu.Lock()
+			ret = append(ret, obj)
+			mu.Unlock()
+		}(gr)
+	}
+	wg.Wait()
+	logrus.Debugf("Requests done (elapsed %s)", duration.HumanDuration(time.Since(start)))
+
+	if len(ret) == 0 {
+		logrus.Warnf("No resources found, are you authorized? Try to narrow the scope with --namespace.")
+		return nil, errEmpty
 	}
 
-	go func() {
-		start := time.Now()
-		group.Wait()
-		close(objsChan)
-		logrus.Debugf("Requests done (elapsed %s)", duration.HumanDuration(time.Since(start)))
-	}()
-
-	var objs []runtime.Object
-	for o := range objsChan {
-		objs = append(objs, o)
-	}
-
-	if len(objs) == 0 {
-		return nil, fmt.Errorf("not authorized to list any resources, try to narrow the scope with --namespace")
-	}
-
-	return util.ToV1List(objs), nil
+	return util.ToV1List(ret), nil
 }
 
-func getResourceScope(scope string) (skipCluster, skipNamespace bool, err error) {
+func getResourceScope(scope string) (cluster, namespace bool, err error) {
 	switch scope {
 	case "":
-		skipCluster = viper.GetString(constants.FlagNamespace) != ""
-		skipNamespace = false
+		cluster = viper.GetString(constants.FlagNamespace) == ""
+		namespace = false
 	case "namespace":
-		skipCluster = true
-		skipNamespace = false
+		cluster = false
+		namespace = true
 	case "cluster":
-		skipCluster = false
-		skipNamespace = true
+		cluster = true
+		namespace = false
 	default:
 		err = fmt.Errorf("%s is not a valid resource scope (must be one of 'cluster' or 'namespace')", scope)
 	}
 	return
 }
 
-// Extracts the full name including APIGroup, e.g. 'deployment.apps'
-func (g groupResource) fullName() string {
+// String returns the canonical full name of the groupResource.
+func (g groupResource) String() string {
 	if g.APIGroup == "" {
 		return g.APIResource.Name
 	}
@@ -238,14 +242,6 @@ func (g groupResource) fullName() string {
 }
 
 type sortableGroupResource []groupResource
-
-func ToResourceTypes(in []groupResource) []string {
-	var result []string
-	for _, r := range in {
-		result = append(result, r.fullName())
-	}
-	return result
-}
 
 func (s sortableGroupResource) Len() int      { return len(s) }
 func (s sortableGroupResource) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
