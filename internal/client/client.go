@@ -116,12 +116,13 @@ func groupResources(cache bool, scope string, flags *genericclioptions.ConfigFla
 				continue
 			}
 
-			if (r.Namespaced && scopeCluster) || (!r.Namespaced && scopeNamespace) {
+			if !((r.Namespaced && scopeNamespace) || (!r.Namespaced && scopeCluster)) {
+				// The resource scope was disabled.
 				continue
 			}
 
 			// filter to resources that can be listed
-			if len(r.Verbs) > 0 && !sets.NewString(r.Verbs...).HasAny("list", "get") {
+			if !sets.NewString(r.Verbs...).HasAny("list", "get") {
 				continue
 			}
 
