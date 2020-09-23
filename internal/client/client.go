@@ -221,7 +221,7 @@ func getResourceScope(scope string) (cluster, namespace bool, err error) {
 	switch scope {
 	case "":
 		cluster = viper.GetString(constants.FlagNamespace) == ""
-		namespace = false
+		namespace = true
 	case "namespace":
 		cluster = false
 		namespace = true
