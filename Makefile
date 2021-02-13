@@ -137,14 +137,10 @@ clean:
 
 $(BUILDDIR)/ketall-amd64-linux: build-ketall
 	$(doUPX)
-$(BUILDDIR)/ketall-amd64-darwin: build-ketall
-	$(doUPX)
 $(BUILDDIR)/ketall-amd64-windows.exe: build-ketall
 	$(doUPX)
 
 $(BUILDDIR)/get-all-amd64-linux: build-get-all
-	$(doUPX)
-$(BUILDDIR)/get-all-amd64-darwin: build-get-all
 	$(doUPX)
 $(BUILDDIR)/get-all-amd64-windows.exe: build-get-all
 	$(doUPX)
