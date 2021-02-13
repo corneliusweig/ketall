@@ -135,11 +135,13 @@ dist: $(DISTFILE)
 clean:
 	$(RM) -r $(BUILDDIR) ketall
 
+$(BUILDDIR)/ketall-amd64-darwin: build-ketall
 $(BUILDDIR)/ketall-amd64-linux: build-ketall
 	$(doUPX)
 $(BUILDDIR)/ketall-amd64-windows.exe: build-ketall
 	$(doUPX)
 
+$(BUILDDIR)/get-all-amd64-darwin: build-get-all
 $(BUILDDIR)/get-all-amd64-linux: build-get-all
 	$(doUPX)
 $(BUILDDIR)/get-all-amd64-windows.exe: build-get-all
