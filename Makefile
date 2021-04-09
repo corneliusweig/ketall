@@ -24,7 +24,7 @@ GOOS      ?= $(shell go env GOOS)
 GOPATH    ?= $(shell go env GOPATH)
 
 BUILDDIR  := out
-PLATFORMS ?= darwin/amd64 windows/amd64 linux/amd64
+PLATFORMS ?= darwin/amd64 darwin/arm64 windows/amd64 linux/amd64
 DISTFILE  := $(BUILDDIR)/$(VERSION).tar.gz
 ASSETS     := $(BUILDDIR)/ketall-$(GOARCH)-darwin.tar.gz $(BUILDDIR)/ketall-$(GOARCH)-linux.tar.gz $(BUILDDIR)/ketall-$(GOARCH)-windows.zip
 ASSETSKREW := $(BUILDDIR)/get-all-$(GOARCH)-darwin.tar.gz $(BUILDDIR)/get-all-$(GOARCH)-linux.tar.gz $(BUILDDIR)/get-all-$(GOARCH)-windows.zip
@@ -135,12 +135,14 @@ dist: $(DISTFILE)
 clean:
 	$(RM) -r $(BUILDDIR) ketall
 
+$(BUILDDIR)/ketall-arm64-darwin: build-ketall
 $(BUILDDIR)/ketall-amd64-darwin: build-ketall
 $(BUILDDIR)/ketall-amd64-linux: build-ketall
 	$(doUPX)
 $(BUILDDIR)/ketall-amd64-windows.exe: build-ketall
 	$(doUPX)
 
+$(BUILDDIR)/get-all-arm64-darwin: build-get-all
 $(BUILDDIR)/get-all-amd64-darwin: build-get-all
 $(BUILDDIR)/get-all-amd64-linux: build-get-all
 	$(doUPX)

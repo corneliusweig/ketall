@@ -7,7 +7,6 @@ spec:
   platforms:
   - {{ addURIAndSha "https://github.com/corneliusweig/ketall/releases/download/{{ .TagName }}/get-all-amd64-linux.tar.gz" .TagName }}
     bin: get-all-amd64-linux
-
     files:
     - from: get-all-amd64-linux
       to: .
@@ -28,6 +27,17 @@ spec:
       matchLabels:
         os: darwin
         arch: amd64
+  - {{ addURIAndSha "https://github.com/corneliusweig/ketall/releases/download/{{ .TagName }}/get-all-arm64-darwin.tar.gz" .TagName }}
+    bin: get-all-arm64-darwin
+    files:
+    - from: get-all-arm64-darwin
+      to: .
+    - from: LICENSE
+      to: .
+    selector:
+      matchLabels:
+        os: darwin
+        arch: arm64
   - {{ addURIAndSha "https://github.com/corneliusweig/ketall/releases/download/{{ .TagName }}/get-all-amd64-windows.zip" .TagName }}
     bin: get-all-amd64-windows.exe
     files:
