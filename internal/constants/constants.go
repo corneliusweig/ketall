@@ -16,11 +16,7 @@ limitations under the License.
 
 package constants
 
-import "github.com/sirupsen/logrus"
-
 const (
-	DefaultLogLevel = logrus.WarnLevel
-
 	FlagConcurrency     = "max-inflight"
 	FlagExclude         = "exclude"
 	FlagNamespace       = "namespace"

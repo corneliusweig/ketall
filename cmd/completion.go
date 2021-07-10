@@ -43,8 +43,8 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"k8s.io/klog/v2"
 )
 
 const (
@@ -238,7 +238,7 @@ var completionCmd = &cobra.Command{
 			err = runCompletionZsh(out)
 		}
 		if err != nil {
-			logrus.Fatal(err)
+			klog.Fatal(err)
 		}
 	},
 }

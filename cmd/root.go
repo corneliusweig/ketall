@@ -17,14 +17,13 @@ limitations under the License.
 package cmd
 
 import (
-	"io"
+	"flag"
 	"path/filepath"
 
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"k8s.io/client-go/util/homedir"
+	"k8s.io/klog/v2"
 
 	"github.com/corneliusweig/ketall/cmd/internal"
 	ketall "github.com/corneliusweig/ketall/internal"
@@ -84,10 +83,11 @@ func Execute() error {
 }
 
 func init() {
+	klog.InitFlags(flag.CommandLine)
 	cobra.OnInitialize(initConfig)
 
+	rootCmd.PersistentFlags().AddGoFlagSet(flag.CommandLine)
 	rootCmd.PersistentFlags().StringVar(&ketallOptions.CfgFile, "config", "", "Config file (default \"$HOME/.kube/ketall.yaml)\"")
-	rootCmd.PersistentFlags().StringVarP(&v, "verbosity", "v", constants.DefaultLogLevel.String(), "Log level (debug, info, warn, error, fatal, panic).")
 
 	rootCmd.Flags().BoolVar(&ketallOptions.UseCache, constants.FlagUseCache, false, "Use cached list of server resources.")
 	rootCmd.Flags().BoolVar(&ketallOptions.AllowIncomplete, constants.FlagAllowIncomplete, true, "Show partial results when fetching of API resources fails.")
@@ -103,14 +103,7 @@ func init() {
 
 	err := viper.BindPFlags(rootCmd.Flags())
 	if err != nil {
-		logrus.Errorf("Cannot bind flags: %s", err)
-	}
-
-	rootCmd.PersistentPreRunE = func(cmd *cobra.Command, args []string) error {
-		if err := SetUpLogs(ketallOptions.Streams.ErrOut, v); err != nil {
-			return err
-		}
-		return nil
+		klog.Errorf("Cannot bind flags: %s", err)
 	}
 }
 
@@ -128,20 +121,5 @@ func initConfig() {
 	// read in environment variables that match
 	viper.SetEnvPrefix("ketall")
 	viper.AutomaticEnv()
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		logrus.Debug("Using config file:", viper.ConfigFileUsed())
-	}
-}
-
-func SetUpLogs(out io.Writer, level string) error {
-	logrus.SetOutput(out)
-	lvl, err := logrus.ParseLevel(level)
-	if err != nil {
-		return errors.Wrap(err, "parsing log level")
-	}
-	logrus.SetLevel(lvl)
-	logrus.Debugf("Set log-level to %s", level)
-	return nil
+	viper.ReadInConfig()
 }

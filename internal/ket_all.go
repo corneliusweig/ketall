@@ -24,14 +24,14 @@ import (
 	"github.com/corneliusweig/ketall/internal/filter"
 	"github.com/corneliusweig/ketall/internal/options"
 	"github.com/corneliusweig/ketall/internal/printer"
-	"github.com/sirupsen/logrus"
 	"k8s.io/cli-runtime/pkg/printers"
+	"k8s.io/klog/v2"
 )
 
 func KetAll(ketallOptions *options.KetallOptions) {
 	all, err := client.GetAllServerResources(ketallOptions.GenericCliFlags)
 	if err != nil {
-		logrus.Fatal(err)
+		klog.Fatal(err)
 	}
 
 	filtered := filter.ApplyFilter(all)
@@ -44,7 +44,7 @@ func KetAll(ketallOptions *options.KetallOptions) {
 
 	resourcePrinter, err := ketallOptions.PrintFlags.ToPrinter()
 	if err != nil {
-		logrus.Fatal(err)
+		klog.Fatal(err)
 	}
 
 	p := resourcePrinter
@@ -56,12 +56,12 @@ func KetAll(ketallOptions *options.KetallOptions) {
 		p = printer.NewListAdapterPrinter(pr)
 	// other printers should flatten the resource list and operate on leaf items
 	case *printer.TablePrinter:
-		logrus.Debug("Using tabwriter")
+		klog.V(2).Info("Using tabwriter")
 		tw := tabwriter.NewWriter(out, 4, 4, 2, ' ', 0)
 		defer tw.Flush()
 		out = tw
 		if err := pr.PrintHeader(out); err != nil {
-			logrus.Fatal("print header", err)
+			klog.Fatal("print header", err)
 		}
 		p = printer.NewFlattenListAdapterPrinter(pr)
 	default:
@@ -69,6 +69,6 @@ func KetAll(ketallOptions *options.KetallOptions) {
 	}
 
 	if err = p.PrintObj(filtered, out); err != nil {
-		logrus.Fatal(err)
+		klog.Fatal(err)
 	}
 }

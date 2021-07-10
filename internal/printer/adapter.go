@@ -20,11 +20,11 @@ import (
 	"io"
 
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/cli-runtime/pkg/printers"
+	"k8s.io/klog/v2"
 )
 
 type FlattenListAdapter struct {
@@ -32,7 +32,7 @@ type FlattenListAdapter struct {
 }
 
 func NewFlattenListAdapterPrinter(printer printers.ResourcePrinter) printers.ResourcePrinter {
-	logrus.Debugf("Wrapping %T with FlattenListAdapterPrinter", printer)
+	klog.V(2).Infof("Wrapping %T with FlattenListAdapterPrinter", printer)
 	return &FlattenListAdapter{printer}
 }
 
@@ -58,7 +58,7 @@ type ListAdapterPrinter struct {
 }
 
 func NewListAdapterPrinter(printer printers.ResourcePrinter) printers.ResourcePrinter {
-	logrus.Debugf("Wrapping %T with ListAdapterPrinter", printer)
+	klog.V(2).Infof("Wrapping %T with ListAdapterPrinter", printer)
 	return &ListAdapterPrinter{printer}
 }
 
