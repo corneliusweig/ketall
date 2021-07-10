@@ -27,7 +27,6 @@ import (
 	"github.com/corneliusweig/ketall/internal/constants"
 	"github.com/corneliusweig/ketall/internal/util"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"golang.org/x/sync/semaphore"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -37,6 +36,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/sets"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/resource"
+	"k8s.io/klog/v2"
 )
 
 var errEmpty = errors.New("no resources found")
@@ -58,7 +58,7 @@ func GetAllServerResources(flags *genericclioptions.ConfigFlags) (runtime.Object
 
 	start := time.Now()
 	response, err := fetchResourcesBulk(flags, grs...)
-	logrus.Debugf("Initial fetchResourcesBulk done (%s)", duration.HumanDuration(time.Since(start)))
+	klog.V(2).Infof("Initial fetchResourcesBulk done (%s)", duration.HumanDuration(time.Since(start)))
 	if err == nil {
 		return response, nil
 	}
@@ -99,7 +99,7 @@ func groupResources(cache bool, scope string, flags *genericclioptions.ConfigFla
 		if resources == nil || !viper.GetBool(constants.FlagAllowIncomplete) {
 			return nil, errors.Wrap(err, "get preferred resources")
 		}
-		logrus.Warnf("Could not fetch complete list of API resources, results will be incomplete: %s", err)
+		klog.Warningf("Could not fetch complete list of API resources, results will be incomplete: %s", err)
 	}
 
 	var grs []groupResource
@@ -144,7 +144,7 @@ func groupResources(cache bool, scope string, flags *genericclioptions.ConfigFla
 		resourceIds = append(resourceIds, r.APIResource.Kind)
 		resourceIds = append(resourceIds, name)
 		if blocked.HasAny(resourceIds...) {
-			logrus.Debugf("Excluding %s", name)
+			klog.V(2).Infof("Excluding %s", name)
 			continue
 		}
 		ret = append(ret, r)
@@ -158,7 +158,7 @@ func fetchResourcesBulk(flags resource.RESTClientGetter, grs ...groupResource) (
 	for _, gr := range grs {
 		resources = append(resources, gr.String())
 	}
-	logrus.Debugf("Resources to fetch: %s", resources)
+	klog.V(2).Infof("Resources to fetch: %s", resources)
 
 	ns := viper.GetString(constants.FlagNamespace)
 	selector := viper.GetString(constants.FlagSelector)
@@ -178,7 +178,7 @@ func fetchResourcesBulk(flags resource.RESTClientGetter, grs ...groupResource) (
 // Fetches all objects of the given resources one-by-one. This can be used as a fallback when fetchResourcesBulk fails.
 func fetchResourcesIncremental(ctx context.Context, flags resource.RESTClientGetter, grs ...groupResource) (runtime.Object, error) {
 	// TODO(corneliusweig): this needs to properly pass ctx around
-	logrus.Debug("Fetch resources incrementally")
+	klog.V(2).Info("Fetch resources incrementally")
 	start := time.Now()
 
 	maxInflight := viper.GetInt64(constants.FlagConcurrency)
@@ -198,7 +198,7 @@ func fetchResourcesIncremental(ctx context.Context, flags resource.RESTClientGet
 			defer sem.Release(1)
 			obj, err := fetchResourcesBulk(flags, gr)
 			if err != nil {
-				logrus.Warnf("Cannot fetch: %v", err)
+				klog.Warningf("Cannot fetch: %v", err)
 				return
 			}
 			mu.Lock()
@@ -207,10 +207,10 @@ func fetchResourcesIncremental(ctx context.Context, flags resource.RESTClientGet
 		}(gr)
 	}
 	wg.Wait()
-	logrus.Debugf("Requests done (elapsed %s)", duration.HumanDuration(time.Since(start)))
+	klog.V(2).Infof("Requests done (elapsed %s)", duration.HumanDuration(time.Since(start)))
 
 	if len(ret) == 0 {
-		logrus.Warnf("No resources found, are you authorized? Try to narrow the scope with --namespace.")
+		klog.Warningf("No resources found, are you authorized? Try to narrow the scope with --namespace.")
 		return nil, errEmpty
 	}
 

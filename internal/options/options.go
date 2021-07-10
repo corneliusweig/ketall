@@ -21,9 +21,9 @@ import (
 	"os"
 
 	"github.com/corneliusweig/ketall/internal/printer"
-	"github.com/sirupsen/logrus"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/printers"
+	"k8s.io/klog/v2"
 )
 
 type KetallOptions struct {
@@ -55,7 +55,7 @@ func NewCmdOptions() *KetallOptions {
 // Sets up options with in-memory buffers as in- and output-streams
 func NewTestTestCmdOptions() (*KetallOptions, *bytes.Buffer, *bytes.Buffer, *bytes.Buffer) {
 	iostreams, in, out, errout := genericclioptions.NewTestIOStreams()
-	logrus.SetOutput(errout)
+	klog.SetOutput(errout)
 	return &KetallOptions{
 		GenericCliFlags: genericclioptions.NewConfigFlags(true),
 		PrintFlags:      KAPrintFlags{genericclioptions.NewPrintFlags("")},

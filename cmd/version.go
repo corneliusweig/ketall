@@ -20,8 +20,8 @@ import (
 	"text/template"
 
 	"github.com/corneliusweig/ketall/internal/version"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"k8s.io/klog/v2"
 )
 
 const (
@@ -61,6 +61,6 @@ func runVersion(cmd *cobra.Command, _ []string) {
 	var t = template.Must(template.New("info").Parse(tpl))
 
 	if err := t.Execute(ketallOptions.Streams.Out, version.GetBuildInfo()); err != nil {
-		logrus.Warn("Could not print version info")
+		klog.Warning("Could not print version info")
 	}
 }

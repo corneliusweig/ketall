@@ -24,10 +24,10 @@ import (
 	"github.com/corneliusweig/ketall/internal/constants"
 	"github.com/corneliusweig/ketall/internal/util"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/klog/v2"
 )
 
 type Predicate = func(runtime.Object) bool
@@ -41,17 +41,17 @@ func ApplyFilter(o runtime.Object) runtime.Object {
 	predicates := make([]Predicate, 0, 1)
 
 	if since := getSince(); since != "" {
-		logrus.Debugf("Found %s argument %s", constants.FlagSince, since)
+		klog.V(2).Infof("Found %s argument %s", constants.FlagSince, since)
 		predicate, err := AgePredicate(since)
 		if err != nil {
-			logrus.Warnf("%s", errors.Wrapf(err, "skipping age filter"))
+			klog.Warningf("%s", errors.Wrapf(err, "skipping age filter"))
 		}
 		predicates = append(predicates, predicate)
 	}
 
 	filtered, err := ByPredicates(o, predicates...)
 	if err != nil {
-		logrus.Warnf("%s", errors.Wrapf(err, "filtering failed"))
+		klog.Warningf("%s", errors.Wrapf(err, "filtering failed"))
 		return o
 	}
 
@@ -101,7 +101,7 @@ func AgePredicate(since string) (Predicate, error) {
 	return func(o runtime.Object) bool {
 		acc, err := meta.Accessor(o)
 		if err != nil {
-			logrus.Warnf("could not extract object metadata for filter")
+			klog.Warningf("could not extract object metadata for filter")
 			return true
 		}
 
