@@ -33,7 +33,6 @@ import (
 
 var (
 	ketallOptions = options.NewCmdOptions()
-	v             string
 )
 
 const (
