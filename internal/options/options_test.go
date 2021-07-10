@@ -43,5 +43,5 @@ func TestKAPrintFlags_ToPrinter(t *testing.T) {
 	flags.OutputFormat = &format
 	p, err = flags.ToPrinter()
 	assert.NoError(t, err)
-	assert.IsType(t, &printers.JSONPrinter{}, p)
+	assert.IsType(t, &printers.OmitManagedFieldsPrinter{}, p)
 }
