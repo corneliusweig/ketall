@@ -77,7 +77,8 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() error {
-	rootCmd.SetOutput(ketallOptions.Streams.Out)
+	rootCmd.SetOut(ketallOptions.Streams.Out)
+	rootCmd.SetErr(ketallOptions.Streams.ErrOut)
 	return rootCmd.Execute()
 }
 
