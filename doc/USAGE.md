@@ -17,7 +17,7 @@ kubectl get-all
 - ...and many standard `kubectl` options. Have a look at `kubectl get-all --help` for a full list of supported flags.
 - `--use-cache` will consider the http cache to determine the server resources to look at. Disabled by default.
 - `--allow-incomplete` will show partial results when fetching the list of API resources fails. Enabled by default.
-- `--verbosity` set the log level (one of debug, info, warn, error, fatal, panic).
+- `-v` set the log level (one of debug, info, warn, error, fatal, panic).
 
 **Hint**: If you do not have access to all resources, bulk fetching needs to be disabled. You can speed things up by explicitly excluding all resources which you may not access.
 
