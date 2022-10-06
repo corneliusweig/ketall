@@ -14,16 +14,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package internal
+package pkg
 
 import (
 	"io"
 	"text/tabwriter"
 
-	"github.com/corneliusweig/ketall/internal/client"
-	"github.com/corneliusweig/ketall/internal/filter"
-	"github.com/corneliusweig/ketall/internal/options"
-	"github.com/corneliusweig/ketall/internal/printer"
+	"github.com/corneliusweig/ketall/pkg/client"
+	"github.com/corneliusweig/ketall/pkg/filter"
+	"github.com/corneliusweig/ketall/pkg/options"
+	"github.com/corneliusweig/ketall/pkg/printer"
 	"k8s.io/cli-runtime/pkg/printers"
 	"k8s.io/klog/v2"
 )
@@ -35,6 +35,15 @@ func KetAll(ketallOptions *options.KetallOptions) {
 	}
 
 	filtered := filter.ApplyFilter(all)
+
+	// items := filtered.(*v1.List).Items
+	// var unstructuredItems []*unstructured.Unstructured
+	// for _, item := range items {
+	// 	unstrucrureItem := item.Object.(*unstructured.Unstructured)
+	// 	fmt.Println(unstrucrureItem.GetName(), unstrucrureItem.GetNamespace(), unstrucrureItem.GetKind())
+	// 	unstructuredItems = append(unstructuredItems, unstrucrureItem)
+	// }
+	// fmt.Println("printing out the resources as golang object", unstructuredItems)
 
 	out := ketallOptions.Streams.Out
 	if filtered == nil {

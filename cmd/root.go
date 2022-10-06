@@ -25,10 +25,10 @@ import (
 	"k8s.io/client-go/util/homedir"
 	"k8s.io/klog/v2"
 
-	"github.com/corneliusweig/ketall/cmd/internal"
-	ketall "github.com/corneliusweig/ketall/internal"
-	"github.com/corneliusweig/ketall/internal/constants"
-	"github.com/corneliusweig/ketall/internal/options"
+	"github.com/corneliusweig/ketall/cmd/pkg"
+	ketall "github.com/corneliusweig/ketall/pkg"
+	"github.com/corneliusweig/ketall/pkg/constants"
+	"github.com/corneliusweig/ketall/pkg/options"
 )
 
 var (
@@ -66,11 +66,11 @@ More on https://github.com/corneliusweig/ketall/blob/v1.3.8/doc/USAGE.md#usage
 )
 
 var rootCmd = &cobra.Command{
-	Use:     internal.CommandName,
+	Use:     pkg.CommandName,
 	Short:   "Like `kubectl get all`, but get _really_ all resources",
-	Long:    internal.HelpTextMapName(ketallLongDescription),
+	Long:    pkg.HelpTextMapName(ketallLongDescription),
 	Args:    cobra.NoArgs,
-	Example: internal.HelpTextMapName(ketallExamples),
+	Example: pkg.HelpTextMapName(ketallExamples),
 	Run: func(cmd *cobra.Command, args []string) {
 		ketall.KetAll(ketallOptions)
 	},

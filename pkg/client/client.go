@@ -24,8 +24,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/corneliusweig/ketall/internal/constants"
-	"github.com/corneliusweig/ketall/internal/util"
+	"github.com/corneliusweig/ketall/pkg/constants"
+	"github.com/corneliusweig/ketall/pkg/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"golang.org/x/sync/semaphore"

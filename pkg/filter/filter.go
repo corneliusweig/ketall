@@ -21,8 +21,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/corneliusweig/ketall/internal/constants"
-	"github.com/corneliusweig/ketall/internal/util"
+	"github.com/corneliusweig/ketall/pkg/constants"
+	"github.com/corneliusweig/ketall/pkg/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"k8s.io/apimachinery/pkg/api/meta"
