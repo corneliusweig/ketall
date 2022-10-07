@@ -1,10 +1,5 @@
 name: ketall CI
 on:
-  push:
-    branches:
-      - '*'
-    tags:
-      - 'v*.*.*'
   pull_request:
     branches:
       - '*'
@@ -27,61 +22,10 @@ jobs:
     - name: Verify go.mod is sane
       run: go mod tidy && git diff --no-patch --exit-code
 
-    - name: Run code lint
-      run: make lint
-
-    - name: Install dependencies
-      run: go mod download
-
-    - name: Run unit tests
-      run: |
-        set -euo pipefail
-        make test
-        make coverage
-
-    - uses: codecov/codecov-action@v2
-      name: Upload coverage to codecov.io
+    - name: golangci-lint
+      uses: golangci/golangci-lint-action@v2
       with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./out/coverage.txt
-
-    - name: Verify build
-      run: make dev
-
-    - name: Make binaries
-      if: contains(github.ref, 'tags')
-      run: |
-        set -euo pipefail
-        sudo apt update
-        sudo apt install -y upx
-        hack/install-gox.sh
-        make deploy
-
-    - name: Create release
-      if: contains(github.ref, 'tags')
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
-
-    - name: Upload binaries to release
-      if: contains(github.ref, 'tags')
-      uses: svenstaro/upload-release-action@v1-release
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        # hacky glob pattern because this does not accept multiple patterns
-        file: out/{get-all,ketall}-{amd64,arm64}-*.{tar,zip}*
-        tag: ${{ github.ref }}
-        overwrite: true
-        file_glob: true
-
-    - name: Update new version in krew-index
-      if: contains(github.ref, 'tags')
-      uses: rajatjindal/krew-release-bot@v0.0.39
-      with:
-        krew_template_file: hack/get-all.yaml
+        version: v1.46.0
+    - name: go test
+      run:
+        go test ./...

@@ -39,11 +39,11 @@
 
 1. `mkdir -p $HOME/go/src`
 2. `export GOPATH=$HOME/go`
-3. `go get -u github.com/corneliusweig/ketall`
+3. `go get -u github.com/flanksource/ketall`
 4. Set `$GOROOT` depending on your OS and Go installation method:
    - MacOS, Go installed via brew: `export GOROOT=/usr/local/opt/go/libexec/`
 5. Now you should be able to build:
-   - `cd $GOPATH/src/github.com/corneliusweig/ketall/`
+   - `cd $GOPATH/src/github.com/flanksource/ketall/`
    - `make dev`
 
 ## Releases

@@ -1,0 +1,18 @@
+name: Create Release
+on:
+  push:
+    branches:
+      - master
+      - main
+jobs:
+  semantic-release:
+    runs-on: ubuntu-latest
+    outputs:
+      release-version: ${{ steps.semantic.outputs.new_release_version }}
+      new-release-published: ${{ steps.semantic.outputs.new-release-published }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: cycjimmy/semantic-release-action@v3
+        id: semantic
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,11 +1,15 @@
 # ketall
 [![Build Status](https://travis-ci.com/corneliusweig/ketall.svg?branch=master)](https://travis-ci.com/corneliusweig/ketall)
 [![Go Report Card](https://goreportcard.com/badge/corneliusweig/ketall)](https://goreportcard.com/report/corneliusweig/ketall)
-[![LICENSE](https://img.shields.io/github/license/corneliusweig/ketall.svg)](https://github.com/corneliusweig/ketall/blob/master/LICENSE)
-[![Releases](https://img.shields.io/github/release-pre/corneliusweig/ketall.svg)](https://github.com/corneliusweig/ketall/releases)
+[![LICENSE](https://img.shields.io/github/license/corneliusweig/ketall.svg)](https://github.com/flanksource/ketall/blob/master/LICENSE)
+[![Releases](https://img.shields.io/github/release-pre/corneliusweig/ketall.svg)](https://github.com/flanksource/ketall/releases)
 <!-- [![Code Coverage](https://codecov.io/gh/corneliusweig/ketall/branch/master/graph/badge.svg)](https://codecov.io/gh/corneliusweig/ketall) -->
 
 Kubectl plugin to show really all kubernetes resources
+
+
+Ketall fork removing all the cli utilities and print options; Just maintaining the single function with all the options;
+
 
 ## Intro
 For a complete overview of all resources in a kubernetes cluster, `kubectl get all --all-namespaces` is not enough, because it simply does not show everything.
@@ -72,18 +76,18 @@ When using the binaries for installation, also have a look at [doc/USAGE](doc/US
 
 #### Linux
 ```bash
-curl -Lo ketall.gz https://github.com/corneliusweig/ketall/releases/download/v1.3.8/ketall-amd64-linux.tar.gz && \
+curl -Lo ketall.gz https://github.com/flanksource/ketall/releases/download/v1.3.8/ketall-amd64-linux.tar.gz && \
   gunzip ketall.gz && chmod +x ketall && mv ketall $GOPATH/bin/
 ```
 
 #### OSX
 ```bash
-curl -Lo ketall.gz https://github.com/corneliusweig/ketall/releases/download/v1.3.8/ketall-amd64-darwin.tar.gz && \
+curl -Lo ketall.gz https://github.com/flanksource/ketall/releases/download/v1.3.8/ketall-amd64-darwin.tar.gz && \
   gunzip ketall.gz && chmod +x ketall && mv ketall $GOPATH/bin/
 ```
 
 #### Windows
-[https://github.com/corneliusweig/ketall/releases/download/v1.3.8/ketall-amd64-windows.zip](https://github.com/corneliusweig/ketall/releases/download/v1.3.8/ketall-amd64-windows.zip)
+[https://github.com/flanksource/ketall/releases/download/v1.3.8/ketall-amd64-windows.zip](https://github.com/flanksource/ketall/releases/download/v1.3.8/ketall-amd64-windows.zip)
 
 ### From source
 
