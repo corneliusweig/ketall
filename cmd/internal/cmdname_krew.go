@@ -1,3 +1,4 @@
+//go:build getall
 // +build getall
 
 /*
