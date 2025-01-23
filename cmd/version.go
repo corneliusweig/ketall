@@ -19,9 +19,10 @@ package cmd
 import (
 	"text/template"
 
-	"github.com/corneliusweig/ketall/internal/version"
 	"github.com/spf13/cobra"
 	"k8s.io/klog/v2"
+
+	"github.com/corneliusweig/ketall/internal/version"
 )
 
 const (

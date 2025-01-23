@@ -24,8 +24,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/corneliusweig/ketall/internal/constants"
-	"github.com/corneliusweig/ketall/internal/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
 	"golang.org/x/sync/semaphore"
@@ -37,6 +35,9 @@ import (
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/resource"
 	"k8s.io/klog/v2"
+
+	"github.com/corneliusweig/ketall/internal/constants"
+	"github.com/corneliusweig/ketall/internal/util"
 )
 
 var errEmpty = errors.New("no resources found")
@@ -139,11 +140,11 @@ func groupResources(cache bool, scope string, flags *genericclioptions.ConfigFla
 	ret := grs[:0]
 	for _, r := range grs {
 		name := r.String()
-		resourceIds := r.APIResource.ShortNames
-		resourceIds = append(resourceIds, r.APIResource.Name)
-		resourceIds = append(resourceIds, r.APIResource.Kind)
-		resourceIds = append(resourceIds, name)
-		if blocked.HasAny(resourceIds...) {
+		resourceIDs := r.APIResource.ShortNames
+		resourceIDs = append(resourceIDs, r.APIResource.Name)
+		resourceIDs = append(resourceIDs, r.APIResource.Kind)
+		resourceIDs = append(resourceIDs, name)
+		if blocked.HasAny(resourceIDs...) {
 			klog.V(2).Infof("Excluding %s", name)
 			continue
 		}
@@ -244,8 +245,10 @@ func (g groupResource) String() string {
 
 type sortableGroupResource []groupResource
 
-func (s sortableGroupResource) Len() int      { return len(s) }
+func (s sortableGroupResource) Len() int { return len(s) }
+
 func (s sortableGroupResource) Swap(i, j int) { s[i], s[j] = s[j], s[i] }
+
 func (s sortableGroupResource) Less(i, j int) bool {
 	ret := strings.Compare(s[i].APIGroup, s[j].APIGroup)
 	if ret > 0 {

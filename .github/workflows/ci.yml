@@ -14,15 +14,16 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-
-    - name: Set up Go 1.16
-      uses: actions/setup-go@v2
-      with:
-        go-version: 1.16
+    - name: Set up Go 1.23.2
+      uses: actions/setup-go@v5
       id: go
+      with:
+        go-version: 1.23.2
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Verify go.mod is sane
       run: go mod tidy && git diff --no-patch --exit-code
@@ -39,49 +40,33 @@ jobs:
         make test
         make coverage
 
-    - uses: codecov/codecov-action@v2
+    - uses: codecov/codecov-action@v4
       name: Upload coverage to codecov.io
+      if: "${{ env.SECRET_CODECOV_TOKEN != '' }}"
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         files: ./out/coverage.txt
 
-    - name: Verify build
-      run: make dev
-
-    - name: Make binaries
-      if: contains(github.ref, 'tags')
-      run: |
-        set -euo pipefail
-        sudo apt update
-        sudo apt install -y upx
-        hack/install-gox.sh
-        make deploy
-
-    - name: Create release
-      if: contains(github.ref, 'tags')
-      id: create_release
-      uses: actions/create-release@v1
+    - name: GoReleaser Build Snapshot
+      if: "!contains(github.ref, 'tags')"
+      uses: goreleaser/goreleaser-action@v6
+      with:
+        version: latest
+        args: release --snapshot --clean
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
-        draft: false
-        prerelease: false
 
-    - name: Upload binaries to release
+    - name: GoReleaser Release
       if: contains(github.ref, 'tags')
-      uses: svenstaro/upload-release-action@v1-release
+      uses: goreleaser/goreleaser-action@v6
       with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        # hacky glob pattern because this does not accept multiple patterns
-        file: out/{get-all,ketall}-{amd64,arm64}-*.{tar,zip}*
-        tag: ${{ github.ref }}
-        overwrite: true
-        file_glob: true
+        version: latest
+        args: release --clean
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Update new version in krew-index
       if: contains(github.ref, 'tags')
-      uses: rajatjindal/krew-release-bot@v0.0.39
+      uses: rajatjindal/krew-release-bot@v0.0.46
       with:
         krew_template_file: hack/get-all.yaml

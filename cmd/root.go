@@ -71,7 +71,7 @@ var rootCmd = &cobra.Command{
 	Long:    internal.HelpTextMapName(ketallLongDescription),
 	Args:    cobra.NoArgs,
 	Example: internal.HelpTextMapName(ketallExamples),
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, _ []string) {
 		ketall.KetAll(ketallOptions)
 	},
 }

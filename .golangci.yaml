@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=https://golangci-lint.run/jsonschema/golangci.jsonschema.json
+issues:
+  exclude-dirs:
+    - hack
+
+run:
+  timeout: 2m
+
+linters:
+  disable:
+    - errcheck
+
+  enable:
+    - goconst
+    - gocritic
+    - goimports
+    - govet
+    - revive
+    - gosec
+    - misspell
+    - unconvert
+    - unparam
+    - stylecheck

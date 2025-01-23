@@ -17,6 +17,7 @@ limitations under the License.
 package printer
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"reflect"
@@ -40,11 +41,11 @@ const (
 
 func (*TablePrinter) PrintObj(r runtime.Object, w io.Writer) error {
 	if printers.InternalObjectPreventer.IsForbidden(reflect.Indirect(reflect.ValueOf(r)).Type().PkgPath()) {
-		return fmt.Errorf(printers.InternalObjectPrinterErr)
+		return errors.New(printers.InternalObjectPrinterErr)
 	}
 
 	if r.GetObjectKind().GroupVersionKind().Empty() {
-		return fmt.Errorf("missing apiVersion or kind; try GetObjectKind().SetGroupVersionKind() if you know the type")
+		return errors.New("missing apiVersion or kind; try GetObjectKind().SetGroupVersionKind() if you know the type")
 	}
 
 	if err := printObj(r, w); err != nil {

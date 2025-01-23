@@ -24,7 +24,8 @@ import (
 	"github.com/blang/semver"
 )
 
-var version, gitCommit, buildDate string
+var Version, gitCommit, buildDate string
+
 var platform = fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH)
 
 type BuildInfo struct {
@@ -40,7 +41,7 @@ type BuildInfo struct {
 func GetBuildInfo() *BuildInfo {
 	// These vars are set via -ldflags settings during 'go build'
 	return &BuildInfo{
-		Version:   version,
+		Version:   Version,
 		GitCommit: gitCommit,
 		BuildDate: buildDate,
 		GoVersion: runtime.Version(),
