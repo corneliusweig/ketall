@@ -5,7 +5,7 @@ metadata:
 spec:
   version: {{ .TagName }}
   platforms:
-  - {{ addURIAndSha "https://github.com/halkeye/ketall/releases/download/{{ .TagName }}/get-all-linux-amd64.tar.gz" .TagName }}
+  - {{ addURIAndSha "https://github.com/stackitcloud/kubectl-get-all/releases/download/{{ .TagName }}/get-all-linux-amd64.tar.gz" .TagName }}
     bin: get-all
     files:
     - from: get-all
@@ -16,7 +16,7 @@ spec:
       matchLabels:
         os: linux
         arch: amd64
-  - {{ addURIAndSha "https://github.com/halkeye/ketall/releases/download/{{ .TagName }}/get-all-linux-arm64.tar.gz" .TagName }}
+  - {{ addURIAndSha "https://github.com/stackitcloud/kubectl-get-all/releases/download/{{ .TagName }}/get-all-linux-arm64.tar.gz" .TagName }}
     bin: get-all
     files:
     - from: get-all
@@ -27,7 +27,7 @@ spec:
       matchLabels:
         os: linux
         arch: arm64
-  - {{ addURIAndSha "https://github.com/halkeye/ketall/releases/download/{{ .TagName }}/get-all-darwin-amd64.tar.gz" .TagName }}
+  - {{ addURIAndSha "https://github.com/stackitcloud/kubectl-get-all/releases/download/{{ .TagName }}/get-all-darwin-amd64.tar.gz" .TagName }}
     bin: get-all
     files:
     - from: get-all
@@ -38,7 +38,7 @@ spec:
       matchLabels:
         os: darwin
         arch: amd64
-  - {{ addURIAndSha "https://github.com/halkeye/ketall/releases/download/{{ .TagName }}/get-all-darwin-arm64.tar.gz" .TagName }}
+  - {{ addURIAndSha "https://github.com/stackitcloud/kubectl-get-all/releases/download/{{ .TagName }}/get-all-darwin-arm64.tar.gz" .TagName }}
     bin: get-all
     files:
     - from: get-all
@@ -49,7 +49,7 @@ spec:
       matchLabels:
         os: darwin
         arch: arm64
-  - {{ addURIAndSha "https://github.com/halkeye/ketall/releases/download/{{ .TagName }}/get-all-windows-amd64.zip" .TagName }}
+  - {{ addURIAndSha "https://github.com/stackitcloud/kubectl-get-all/releases/download/{{ .TagName }}/get-all-windows-amd64.zip" .TagName }}
     bin: get-all.exe
     files:
     - from: get-all.exe
@@ -60,7 +60,7 @@ spec:
       matchLabels:
         os: windows
         arch: amd64
-  - {{ addURIAndSha "https://github.com/halkeye/ketall/releases/download/{{ .TagName }}/get-all-windows-arm64.zip" .TagName }}
+  - {{ addURIAndSha "https://github.com/stackitcloud/kubectl-get-all/releases/download/{{ .TagName }}/get-all-windows-arm64.zip" .TagName }}
     bin: get-all.exe
     files:
     - from: get-all.exe
@@ -72,7 +72,7 @@ spec:
         os: windows
         arch: arm64
   shortDescription: Like `kubectl get all` but _really_ everything
-  homepage: https://github.com/halkeye/ketall
+  homepage: https://github.com/stackitcloud/kubectl-get-all
   description: |+2
 
       Like 'kubectl get all', but get _really_ all resources
@@ -82,4 +82,4 @@ spec:
       is not enough, because it simply does not show everything. This helper
       lists _really_ all resources on the cluster.
 
-      More on https://github.com/halkeye/ketall/blob/master/doc/USAGE.md
+      More on https://github.com/stackitcloud/kubectl-get-all/blob/master/doc/USAGE.md

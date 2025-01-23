@@ -21,10 +21,10 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/corneliusweig/ketall/internal/constants"
-	"github.com/corneliusweig/ketall/internal/util"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+	"github.com/stackitcloud/kubectl-get-all/internal/constants"
+	"github.com/stackitcloud/kubectl-get-all/internal/util"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/klog/v2"

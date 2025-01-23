@@ -22,7 +22,7 @@ import (
 	"github.com/spf13/cobra"
 	"k8s.io/klog/v2"
 
-	"github.com/corneliusweig/ketall/internal/version"
+	"github.com/stackitcloud/kubectl-get-all/internal/version"
 )
 
 const (

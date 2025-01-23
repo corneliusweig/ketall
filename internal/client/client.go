@@ -36,8 +36,8 @@ import (
 	"k8s.io/cli-runtime/pkg/resource"
 	"k8s.io/klog/v2"
 
-	"github.com/corneliusweig/ketall/internal/constants"
-	"github.com/corneliusweig/ketall/internal/util"
+	"github.com/stackitcloud/kubectl-get-all/internal/constants"
+	"github.com/stackitcloud/kubectl-get-all/internal/util"
 )
 
 var errEmpty = errors.New("no resources found")

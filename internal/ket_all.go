@@ -20,10 +20,10 @@ import (
 	"io"
 	"text/tabwriter"
 
-	"github.com/corneliusweig/ketall/internal/client"
-	"github.com/corneliusweig/ketall/internal/filter"
-	"github.com/corneliusweig/ketall/internal/options"
-	"github.com/corneliusweig/ketall/internal/printer"
+	"github.com/stackitcloud/kubectl-get-all/internal/client"
+	"github.com/stackitcloud/kubectl-get-all/internal/filter"
+	"github.com/stackitcloud/kubectl-get-all/internal/options"
+	"github.com/stackitcloud/kubectl-get-all/internal/printer"
 	"k8s.io/cli-runtime/pkg/printers"
 	"k8s.io/klog/v2"
 )

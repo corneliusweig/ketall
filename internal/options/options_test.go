@@ -19,7 +19,7 @@ package options
 import (
 	"testing"
 
-	"github.com/corneliusweig/ketall/internal/printer"
+	"github.com/stackitcloud/kubectl-get-all/internal/printer"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	"k8s.io/cli-runtime/pkg/printers"
