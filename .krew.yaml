@@ -1,0 +1,41 @@
+apiVersion: krew.googlecontainertools.github.com/v1alpha2
+kind: Plugin
+metadata:
+  name: get-all
+spec:
+  version: {{ .TagName }}
+  homepage: https://github.com/stackitcloud/kubectl-get-all
+  shortDescription: Get really all Kubernetes resources
+  description: |
+    For a complete overview of all resources in a kubernetes cluster, `kubectl get all --all-namespaces` is not enough, because it simply does not show everything.
+  platform:
+    - selector:
+        matchLabels:
+          os: linux
+          arch: amd64
+      {{addURIAndSha "https://github.com/stackitcloud/kubectl-get-all/releases/download/{{ .TagName }}/kubectl-get-all_{{ .TagName }}_linux_amd64.tar.gz" .TagName }}
+      bin: kubectl-get-all
+    - selector:
+        matchLabels:
+          os: linux
+          arch: arm64
+      {{addURIAndSha "https://github.com/stackitcloud/kubectl-get-all/releases/download/{{ .TagName }}/kubectl-get-all_{{ .TagName }}_linux_arm64.tar.gz" .TagName }}
+      bin: kubectl-get-all
+    - selector:
+        matchLabels:
+          os: darwin
+          arch: amd64
+      {{addURIAndSha "https://github.com/stackitcloud/kubectl-get-all/releases/download/{{ .TagName }}/kubectl-get-all_{{ .TagName }}_darwin_amd64.tar.gz" .TagName }}
+      bin: kubectl-get-all
+    - selector:
+        matchLabels:
+          os: darwin
+          arch: arm64
+      {{addURIAndSha "https://github.com/stackitcloud/kubectl-get-all/releases/download/{{ .TagName }}/kubectl-get-all_{{ .TagName }}_darwin_arm64.tar.gz" .TagName }}
+      bin: kubectl-get-all
+    - selector:
+        matchLabels:
+          os: windows
+          arch: amd64
+      {{addURIAndSha "https://github.com/stackitcloud/kubectl-get-all/releases/download/{{ .TagName }}/kubectl-get-all_{{ .TagName }}_windows_amd64.zip" .TagName }}
+      bin: kubectl-get-all.exe

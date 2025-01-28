@@ -8,14 +8,12 @@
 
 version: 2
 project_name: get-all
-
 before:
   hooks:
     # You may remove this if you don't use go modules.
     - go mod tidy
     # you may remove this if you don't need go generate
     - go generate ./...
-
 builds:
   - id: get-all
     main: ./
@@ -23,7 +21,7 @@ builds:
     env:
       - CGO_ENABLED=0
     ldflags:
-      - "-s -w -X github.com/corneliusweig/ketall/internal/version.Version={{.Version}}"
+      - "-s -w -X github.com/stackitcloud/kubectl-get-all/internal/version.Version={{.Version}}"
     goos:
       - linux
       - windows
@@ -31,7 +29,6 @@ builds:
     goarch:
       - amd64
       - arm64
-
 archives:
   - builds:
       - get-all
@@ -44,7 +41,6 @@ archives:
     format_overrides:
       - goos: windows
         format: zip
-
 changelog:
   sort: asc
   filters:
